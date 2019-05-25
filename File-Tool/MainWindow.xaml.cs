@@ -74,9 +74,7 @@ namespace BatchRename
 
         private void BtnRefresh(object sender, RoutedEventArgs e)
         {
-            _listview_file.Items.Refresh();
-            _listview_folder.Items.Refresh();
-            _comboboxPreset.Items.Refresh();
+           
             _comboboxPreset.SelectedIndex = 0;
         }
 
@@ -88,16 +86,16 @@ namespace BatchRename
         {
             MessageBox.Show("You can do it.","Help");
         }
-
+        
         private void ComboBox_Load(object sender, RoutedEventArgs e)
         {
             _comboboxPreset.Items.Add("Default");
-            _comboboxPreset.Items.Add("Preset 1");
-            _comboboxPreset.Items.Add("Preset 2");
-            _comboboxPreset.Items.Add("Preset 3");
+            _comboboxPreset.Items.Add("Preset 01");
+            _comboboxPreset.Items.Add("Preset 02");
+            _comboboxPreset.Items.Add("Preset 03");
             _comboboxPreset.SelectedIndex = 0;
         }
-
+        
         private void BtnNewCase(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("New Case");
@@ -105,14 +103,7 @@ namespace BatchRename
 
         private void BtnReplace(object sender, RoutedEventArgs e)
         {
-            bool tick =(bool)_checkboxReplace.IsChecked;
-            MessageBox.Show("Replace " + tick);
-        }
-
-        private void ToggleBtn(object sender, RoutedEventArgs e)
-        {
-            bool tick = (bool)_checkboxToggle.IsChecked;
-            MessageBox.Show("Toggle " + tick);
+            
         }
 
         private void CheckTog(object sender, RoutedEventArgs e)
@@ -138,6 +129,11 @@ namespace BatchRename
         private void BtnFun2(object sender, RoutedEventArgs e)
         {
                 
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            ComboBox_Load(sender,new RoutedEventArgs());
         }
     }
 }

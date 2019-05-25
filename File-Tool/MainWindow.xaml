@@ -4,22 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BatchRename"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"  
+        FontFamily="{DynamicResource MaterialDesignFont}"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"        
-        Background="{DynamicResource MaterialDesignPaper}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
+        TextOptions.TextRenderingMode="Auto"   
         mc:Ignorable="d"
         Icon="Icons/icon_app.png"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded"
         Title="Batch Rename" Height="450" Width="800">
     <Grid>
-        <TabControl Name="_tabcontrolShow" HorizontalAlignment="Right" Height="400" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="500">
-            <TabItem Header="Rename Files">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="280"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,5,0" Height="410" VerticalAlignment="Top" Width="490">
+            <TabItem Grid.Column="1" Header="Rename Files" Height="35" >
                 <Grid Background="White" Margin="0,0,0,0">
                     <DockPanel>
                         <ToolBarTray HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -62,56 +66,9 @@
                             </ToolBar>
                         </ToolBarTray>
                     </DockPanel>
-                    <ListView Name="_listview_file" Margin="0,30,0,0" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.Resources>
-                            <DataTemplate x:Key="NameTemplate">
-                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
-                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"></TextBlock>
-                                </Border>
-                            </DataTemplate>
-                            <DataTemplate x:Key="ActualValueTemplate">
-                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
-                                    <TextBlock Name="ActualValueTextBlock" Margin="2,1,1,1" Text="{Binding TextMeasuredValue}" VerticalAlignment="Center"></TextBlock>
-                                </Border>
-                            </DataTemplate>
-                        </ListView.Resources>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Filename" Width="200">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border BorderBrush="Gray" BorderThickness="1">
-                                            </Border>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="New Filename" Width="200">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border BorderBrush="Gray" BorderThickness="0,0,1,0"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Path" Width="100"/>
-                                <GridViewColumn Header="Error" Width="7">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Error}" TextDecorations="Underline" Foreground="Red" Cursor="Hand"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
                 </Grid>
             </TabItem>
-            <TabItem Header="Rename Folder">
+            <TabItem Grid.Column="1" Header="Rename Folder">
                 <Grid Background="White">
                     <DockPanel>
                         <ToolBarTray HorizontalAlignment="Left" VerticalAlignment="Top">
@@ -154,205 +111,98 @@
                             </ToolBar>
                         </ToolBarTray>
                     </DockPanel>
-                    <ListView Name="_listview_folder" Margin="0,30,0,0" >
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
-                                <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.Resources>
-                            <DataTemplate x:Key="NameTemplate">
-                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
-                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"></TextBlock>
-                                </Border>
-                            </DataTemplate>
-                            <DataTemplate x:Key="ActualValueTemplate">
-                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
-                                    <TextBlock Name="ActualValueTextBlock" Margin="2,1,1,1" Text="{Binding TextMeasuredValue}" VerticalAlignment="Center"></TextBlock>
-                                </Border>
-                            </DataTemplate>
-                        </ListView.Resources>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Filename" Width="200">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border BorderBrush="Gray" BorderThickness="1">
-                                            </Border>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="New Filename" Width="100">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border BorderBrush="Gray" BorderThickness="0,0,1,0"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Path" Width="100"/>
-                                <GridViewColumn Header="Error" Width="70">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Error}" TextDecorations="Underline" Foreground="Red" Cursor="Hand"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
                 </Grid>
             </TabItem>
         </TabControl>
-        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+        <DockPanel  VerticalAlignment="Top" HorizontalAlignment="Left">
             <ToolBarTray DockPanel.Dock="Top" Height="35">
-                <ToolBar Loaded="ToolBar_Loaded" Width="271.523">
-                    <Button Name="_btnRefresh" Click="BtnRefresh" Height="35">
-                        <DockPanel>
-                            <Image Source="Icons/icon_refresh_16.png" Width="12" Height="12"/>
-                            <TextBlock Text="Refresh" Height="43"/>
-                        </DockPanel>
+                <ToolBar Loaded="ToolBar_Loaded" Width="280">
+                    <Button Name="_btnRefresh" Click="BtnRefresh" Width="70" Height="35" Style="{StaticResource MaterialDesignToolButton}">
+                        <StackPanel Orientation="Horizontal" Margin="-10">
+                            <Image Source="Icons/icon_refresh_16.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBlock Padding="2" Text="Refresh"/>
+                        </StackPanel>
                     </Button>
                     <Separator />
-                    <Menu Name="_menuHelp" Height="35">
-                        <MenuItem Header="Help" Padding="-1,2,4,2">
-                            <MenuItem.Icon>
+                    <Menu Name="_menuHelp" Height="35" Width="70">
+                        <MenuItem  Header="Help" Padding="-1,7,15,10">
+                            <MenuItem.Icon >
                                 <Image Source="Icons/icon_help.png" Width="12" Height="12"/>
                             </MenuItem.Icon>
-                            <MenuItem Header="About" Click="ShowAbout"/>
+                            <MenuItem  Header="About" Click="ShowAbout"/>
                             <MenuItem Header="Help" Click="Help"/>
                         </MenuItem>
                     </Menu>
                     <Separator />
-                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Height="35" Width="100">
-                        <DockPanel>
-                            <Image Source="Icons/icon_play.png" Height="16" Width="16"/>
-                            <TextBlock Text="START BATCH"/>
-                        </DockPanel>
+                    <Button Name="_btnStartBatch" Click="BtnRefresh" Width="70" Height="35" Style="{StaticResource MaterialDesignToolButton}">
+                        <StackPanel Orientation="Horizontal" Margin="-10">
+                            <Image Source="Icons/icon_play.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <TextBlock Text="START" Padding="5"/>
+                        </StackPanel>
                     </Button>
                     <Separator />
                 </ToolBar>
             </ToolBarTray>
         </DockPanel>
-        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,40,0,0" Width="271.523">
-            <ToolBarTray DockPanel.Dock="Top">
-                <ToolBar Loaded="ToolBar_Loaded">
-                    <Menu Name="_menuAddMethod">
-                        <MenuItem  Header="Add Method " Padding="-3,2,2,2">
-                            <MenuItem.Icon>
-                                <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
-                            </MenuItem.Icon>
-                            <MenuItem Header="New Case">
-
-                            </MenuItem>
-                            <MenuItem Header="Move">
-
-                            </MenuItem>
-                            <MenuItem Header="Remove Pattern">
-
-                            </MenuItem>
-                            <MenuItem Header="Replace">
-
-                            </MenuItem>
-                            <MenuItem Header="Trim">
-
-                            </MenuItem>
-                            <MenuItem Header="New Name">
-
-                            </MenuItem>
-                        </MenuItem>
-                    </Menu>
-                    <Separator />
-                    <Button Name="_btnClear" Padding="0,2,3,2">
-                        <DockPanel>
-                            <Image Source="Icons/icon_clear.png" Width="16" Height="16" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Clear"/>
-                        </DockPanel>
-                    </Button>
-                    <Separator />
-                    <Button Name="_btnTopMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35">
+            <ToolBarTray DockPanel.Dock="Top" Height="35">
+                <ToolBar Loaded="ToolBar_Loaded" Width="280">
+                    <Button Name="_btnNewPreset" Width="25" Height="25" Style="{StaticResource MaterialDesignFlatButton}">
                         <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_top.png"/>
-                        </Button.Background>
-                    </Button>
-                    <Button Name="_btnUpMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_up.png"/>
-                        </Button.Background>
-                    </Button>
-                    <Button Name="_btnDownMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_down.png"/>
-                        </Button.Background>
-                    </Button>
-                    <Button Name="_btnBottomMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_bottom.png"/>
+                            <ImageBrush ImageSource="Icons/icon_new.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Button.Background>
                     </Button>
                     <Separator />
-                </ToolBar>
-            </ToolBarTray>
-        </DockPanel>
-        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80">
-            <ToolBarTray DockPanel.Dock="Top">
-                <ToolBar Loaded="ToolBar_Loaded">
-                    <Button Name="_btnNewPreset" Width="20" Height="20" Padding="4,2">
+                    <Button Name="_btnSavePreset" Width="25" Height="25" Style="{StaticResource MaterialDesignFlatButton}">
                         <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_new.png"/>
-                        </Button.Background>
-                    </Button>
-                    <Separator />
-                    <Button Name="_btnSavePreset" Width="20" Height="20" Padding="4,2" Margin="0">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_save.png"/>
+                            <ImageBrush ImageSource="Icons/icon_save.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Button.Background>
                     </Button>
                     <Separator />
                     <TextBlock Text="Preset:" VerticalAlignment="Center"/>
-                    <ComboBox Name="_comboboxPreset" Width="100" Loaded="ComboBox_Load">
-                    </ComboBox>
+                    <ComboBox Name="_comboboxPreset" Width="130"/>
                     <Separator />
                 </ToolBar>
             </ToolBarTray>
         </DockPanel>
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,140">
-            <ToggleButton Name="_btnNewCase" Width="250" Height="30" Click="BtnNewCase">
-                <DockPanel HorizontalAlignment="Right" Width="250">
-                    <TextBlock Text="New Case" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
-                    <CheckBox  Margin="100,3,0,0" Name="_checkboxNewCase" IsChecked="True"/>
-                </DockPanel>
-            </ToggleButton>
-            <ToggleButton Name="_btnReplace" Width="250" Height="25" Click="BtnReplace">
-                <DockPanel HorizontalAlignment="Right" Width="250">
-                    <TextBlock Text="Replace" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
-                    <CheckBox  Margin="115,3,0,0" Name="_checkboxReplace" IsChecked="True" />
-                </DockPanel>
-            </ToggleButton>
-            <ToggleButton Name="_btnMove" Width="250" Height="25" Click="BtnMove">
-                <DockPanel HorizontalAlignment="Right" Width="250">
-                    <TextBlock Text="Move" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
-                    <CheckBox  Margin="131,3,0,0" Name="_checkboxMove" IsChecked="True" />
-                </DockPanel>
-            </ToggleButton>
-            <ToggleButton Name="_btnFunc1" Width="250" Height="25" Click="BtnFun1">
-                <DockPanel HorizontalAlignment="Right" Width="250">
-                    <TextBlock Text="Func 1" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
-                    <CheckBox  Margin="124,3,0,0" Name="_checkboxFunc1" IsChecked="True"/>
-                </DockPanel>
-            </ToggleButton>
-            <ToggleButton Name="_btnFunc2" Width="250" Height="25" Click="BtnFun2">
-                <DockPanel HorizontalAlignment="Right" Width="250">
-                    <TextBlock Text="Func 2" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
-                    <CheckBox  Margin="124,3,0,0" Name="_checkboxFunc2" IsChecked="True"/>
-                </DockPanel>
-            </ToggleButton>
-            <ToggleButton Name="_togglebtnFunc2" Width="250" Height="25" Click="ToggleBtn">
-                <DockPanel HorizontalAlignment="Right" Width="250">
-                    <TextBlock Text="Func 2" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
-                    <CheckBox  Margin="124,3,0,0" Name="_checkboxToggle" IsChecked="True"/>
-                </DockPanel>
-            </ToggleButton>
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="180,80,0,0" Width="50">
+            <Separator />
+            <ToggleButton Name="_btnNewCase" Width="60" Height="35" Click="BtnNewCase"/>
+            <Separator />
+            <ToggleButton Name="_btnReplace"  Width="60" Height="35" Click="BtnReplace"/>
+            <Separator />
+            <ToggleButton Name="_btnMove" Width="60" Height="35" Click="BtnMove"/>
+            <Separator />
+            <ToggleButton Name="_btnFunc1" Width="60" Height="35" Click="BtnFun1"/>
+            <Separator />
+            <ToggleButton Name="_btnFunc2" Width="60" Height="35" Click="BtnFun2"/>
+            <Separator />
+        </StackPanel>
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80" Width="35">
+            <Separator />
+            <Image Source="Icons/icon_property1.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Separator />
+            <Image Source="Icons/icon_property2.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Separator />
+            <Image Source="Icons/icon_property3.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Separator />
+            <Image Source="Icons/icon_property4.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Separator />
+            <Image Source="Icons/icon_property5.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+            <Separator />
+        </StackPanel>
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="35,80" Width="150">
+            <Separator />
+            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="New Case"/>
+            <Separator />
+            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Replace"/>
+            <Separator />
+            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Move"/>
+            <Separator />
+            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Func1"/>
+            <Separator />
+            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Func2"/>
+            <Separator />
         </StackPanel>
     </Grid>
 </Window>

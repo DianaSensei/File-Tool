@@ -35,6 +35,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialDesignColors.1.1.3\lib\net45\MaterialDesignColors.dll</HintPath>
+    </Reference>
+    <Reference Include="MaterialDesignThemes.Wpf, Version=2.5.1.1345, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MaterialDesignThemes.2.5.1\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.2.8.0\lib\net46\Serilog.dll</HintPath>
+    </Reference>
+    <Reference Include="Serilog.Sinks.File, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>..\packages\Serilog.Sinks.File.4.0.0\lib\net45\Serilog.Sinks.File.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -86,6 +98,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -93,6 +106,35 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\icon_add_16.png" />
+    <Resource Include="Icons\icon_app.png" />
+    <Resource Include="Icons\icon_bottom.png" />
+    <Resource Include="Icons\icon_clear.png" />
+    <Resource Include="Icons\icon_down.png" />
+    <Resource Include="Icons\icon_help.png" />
+    <Resource Include="Icons\icon_new.png" />
+    <Resource Include="Icons\icon_play.png" />
+    <Resource Include="Icons\icon_refresh_16.png" />
+    <Resource Include="Icons\icon_save.png" />
+    <Resource Include="Icons\icon_top.png" />
+    <Resource Include="Icons\icon_up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\icon_property.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\icon_property1.png" />
+    <Resource Include="Icons\icon_property2.png" />
+    <Resource Include="Icons\icon_property3.png" />
+    <Resource Include="Icons\icon_property4.png" />
+    <Resource Include="Icons\icon_property5.png" />
+    <Resource Include="Icons\icon_property6.png" />
+    <Resource Include="Icons\icon_property7.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
