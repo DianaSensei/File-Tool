@@ -135,5 +135,10 @@ namespace BatchRename
         {
             ComboBox_Load(sender,new RoutedEventArgs());
         }
+
+        private void _btnRemove_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -20,51 +20,15 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*">
+
+            </ColumnDefinition>
         </Grid.ColumnDefinitions>
         <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,5,0" Height="410" VerticalAlignment="Top" Width="490">
             <TabItem Grid.Column="1" Header="Rename Files" Height="35" >
                 <Grid Background="White" Margin="0,0,0,0">
                     <DockPanel>
-                        <ToolBarTray HorizontalAlignment="Left" VerticalAlignment="Top">
-                            <ToolBar Loaded="ToolBar_Loaded">
-                                <Menu>
-                                    <MenuItem  Name="_btn_tab_Add" Header="Add " Margin="0,1,0,0" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True" Padding="-3,2,2,2" VerticalContentAlignment="Center">
-                                        <MenuItem.Icon>
-                                            <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
-                                        </MenuItem.Icon>
-                                        <MenuItem Header="File" Click="MenuItem_Tab_AddFile"/>
-                                        <MenuItem Header="Folder" Click="MenuItem_Tab_AddFolder"/>
-                                    </MenuItem>
-                                </Menu>
-                                <Separator />
-                                <Button Name="_btnTopShow" Click="MenuItem_Tab_Top"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_top.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Button Name="_btnUpShow" Click="MenuItem_Tab_Up"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_up.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Button Name="_btnDownShow" Click="MenuItem_Tab_Down"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Top" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_down.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Button Name="_btnBottomShow" Click="MenuItem_Tab_Bottom"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_bottom.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Separator />
-                            </ToolBar>
-                        </ToolBarTray>
+
                     </DockPanel>
                 </Grid>
             </TabItem>
@@ -114,10 +78,52 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        <ToolBarTray Grid.Column="1" DockPanel.Dock="Top" Height="35" Width="340" Margin="192,1,18,375">
+            <ToolBar Loaded="ToolBar_Loaded">
+                <Menu>
+                    <MenuItem Name="_btn_tab_Add" Header="Add " Margin="-7,5,0,0" Padding="-4,5,0,5">
+                        <MenuItem.Icon>
+                            <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="File" Click="MenuItem_Tab_AddFile"/>
+                        <MenuItem Header="Folder" Click="MenuItem_Tab_AddFolder"/>
+                    </MenuItem>
+                </Menu>
+                <Separator />
+                <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}" Margin="-10,0,-10,0" Click="_btnRemove_Click" Height="35">
+                    <StackPanel Orientation="Horizontal" Margin="-3">
+                        <Image Source="Icons/icon_clear.png" Height="20"  RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Padding="5" Text="Remove"/>
+                    </StackPanel>
+                </Button>
+                <Separator/>
+                <Button Name="_btnTopShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Top" Width="25" Height="25">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icons/icon_top.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button.Background>
+                </Button>
+                <Button Name="_btnUpShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Up"  Width="25" Height="25">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icons/icon_up.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button.Background>
+                </Button>
+                <Button Name="_btnDownShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Down" Width="25" Height="25">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icons/icon_down.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button.Background>
+                </Button>
+                <Button Name="_btnBottomShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Bottom" Width="25" Height="25">
+                    <Button.Background>
+                        <ImageBrush ImageSource="Icons/icon_bottom.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Button.Background>
+                </Button>
+                <Separator />
+            </ToolBar>
+        </ToolBarTray>
         <DockPanel  VerticalAlignment="Top" HorizontalAlignment="Left">
             <ToolBarTray DockPanel.Dock="Top" Height="35">
                 <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnRefresh" Click="BtnRefresh" Width="70" Height="35" Style="{StaticResource MaterialDesignToolButton}">
+                    <Button Name="_btnRefresh" Margin="-5,0,0,0" Click="BtnRefresh" Width="79" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal" Margin="-10">
                             <Image Source="Icons/icon_refresh_16.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
                             <TextBlock Padding="2" Text="Refresh"/>
@@ -147,13 +153,13 @@
         <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35">
             <ToolBarTray DockPanel.Dock="Top" Height="35">
                 <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnNewPreset" Width="25" Height="25" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Name="_btnNewPreset" Width="25" Height="25" Style="{StaticResource MaterialDesignRaisedButton}">
                         <Button.Background>
                             <ImageBrush ImageSource="Icons/icon_new.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Button.Background>
                     </Button>
                     <Separator />
-                    <Button Name="_btnSavePreset" Width="25" Height="25" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Name="_btnSavePreset" Width="25" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
                         <Button.Background>
                             <ImageBrush ImageSource="Icons/icon_save.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Button.Background>
