@@ -1,12 +1,358 @@
-﻿<Window x:Class="File_Tool.MainWindow"
+﻿<Window x:Class="BatchRename.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:File_Tool"
+        xmlns:local="clr-namespace:BatchRename"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Icon="Icons/icon_app.png"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        Title="Batch Rename" Height="450" Width="800">
     <Grid>
-        
+        <TabControl Name="_tabcontrolShow" HorizontalAlignment="Right" Height="400" Margin="0,0,0,0" VerticalAlignment="Bottom" Width="500">
+            <TabItem Header="Rename Files">
+                <Grid Background="White" Margin="0,0,0,0">
+                    <DockPanel>
+                        <ToolBarTray HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <ToolBar Loaded="ToolBar_Loaded">
+                                <Menu>
+                                    <MenuItem  Name="_btn_tab_Add" Header="Add " Margin="0,1,0,0" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True" Padding="-3,2,2,2" VerticalContentAlignment="Center">
+                                        <MenuItem.Icon>
+                                            <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
+                                        </MenuItem.Icon>
+                                        <MenuItem Header="File" Click="MenuItem_Tab_AddFile"/>
+                                        <MenuItem Header="Folder" Click="MenuItem_Tab_AddFolder"/>
+                                    </MenuItem>
+                                </Menu>
+                                <Separator />
+                                <Button Name="_btnTopShow" Click="MenuItem_Tab_Top"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_top.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Button Name="_btnUpShow" Click="MenuItem_Tab_Up"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_up.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Button Name="_btnDownShow" Click="MenuItem_Tab_Down"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Top" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_down.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Button Name="_btnBottomShow" Click="MenuItem_Tab_Bottom"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_bottom.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Separator />
+                            </ToolBar>
+                        </ToolBarTray>
+                    </DockPanel>
+                    <ListView Name="_listview_file" Margin="0,30,0,0" >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.Resources>
+                            <DataTemplate x:Key="NameTemplate">
+                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"></TextBlock>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate x:Key="ActualValueTemplate">
+                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
+                                    <TextBlock Name="ActualValueTextBlock" Margin="2,1,1,1" Text="{Binding TextMeasuredValue}" VerticalAlignment="Center"></TextBlock>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Filename" Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="Gray" BorderThickness="1">
+                                            </Border>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="New Filename" Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="Gray" BorderThickness="0,0,1,0"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Path" Width="100"/>
+                                <GridViewColumn Header="Error" Width="7">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Error}" TextDecorations="Underline" Foreground="Red" Cursor="Hand"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Rename Folder">
+                <Grid Background="White">
+                    <DockPanel>
+                        <ToolBarTray HorizontalAlignment="Left" VerticalAlignment="Top">
+                            <ToolBar Loaded="ToolBar_Loaded">
+                                <Menu>
+                                    <MenuItem  Name="_btn_tab2_Add" Header="Add " Margin="0,1,0,0" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True" Padding="-3,2,2,2" VerticalContentAlignment="Center">
+                                        <MenuItem.Icon>
+                                            <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
+                                        </MenuItem.Icon>
+                                        <MenuItem Header="File" Click="MenuItem_Tab_AddFile"/>
+                                        <MenuItem Header="Folder" Click="MenuItem_Tab_AddFolder"/>
+                                    </MenuItem>
+                                </Menu>
+                                <Separator />
+                                <Button Name="_btnTopShowFolder" Click="MenuItem_Tab_Top"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_top.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Button Name="_btnUpShowFolder" Click="MenuItem_Tab_Up"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_up.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Button Name="_btnDownShowFolder" Click="MenuItem_Tab_Down"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_down.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Button Name="_btnBottomShowFolder" Click="MenuItem_Tab_Bottom"
+                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                                    <Button.Background>
+                                        <ImageBrush ImageSource="Icons/icon_bottom.png"/>
+                                    </Button.Background>
+                                </Button>
+                                <Separator />
+                            </ToolBar>
+                        </ToolBarTray>
+                    </DockPanel>
+                    <ListView Name="_listview_folder" Margin="0,30,0,0" >
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                <Setter Property="VerticalContentAlignment" Value="Stretch"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.Resources>
+                            <DataTemplate x:Key="NameTemplate">
+                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
+                                    <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"></TextBlock>
+                                </Border>
+                            </DataTemplate>
+                            <DataTemplate x:Key="ActualValueTemplate">
+                                <Border BorderThickness="0,0,1,1" BorderBrush="LightGray" Margin="-6,0,-6,0">
+                                    <TextBlock Name="ActualValueTextBlock" Margin="2,1,1,1" Text="{Binding TextMeasuredValue}" VerticalAlignment="Center"></TextBlock>
+                                </Border>
+                            </DataTemplate>
+                        </ListView.Resources>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Filename" Width="200">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="Gray" BorderThickness="1">
+                                            </Border>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="New Filename" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="Gray" BorderThickness="0,0,1,0"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Path" Width="100"/>
+                                <GridViewColumn Header="Error" Width="70">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Error}" TextDecorations="Underline" Foreground="Red" Cursor="Hand"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+            <ToolBarTray DockPanel.Dock="Top" Height="35">
+                <ToolBar Loaded="ToolBar_Loaded" Width="271.523">
+                    <Button Name="_btnRefresh" Click="BtnRefresh" Height="35">
+                        <DockPanel>
+                            <Image Source="Icons/icon_refresh_16.png" Width="12" Height="12"/>
+                            <TextBlock Text="Refresh" Height="43"/>
+                        </DockPanel>
+                    </Button>
+                    <Separator />
+                    <Menu Name="_menuHelp" Height="35">
+                        <MenuItem Header="Help" Padding="-1,2,4,2">
+                            <MenuItem.Icon>
+                                <Image Source="Icons/icon_help.png" Width="12" Height="12"/>
+                            </MenuItem.Icon>
+                            <MenuItem Header="About" Click="ShowAbout"/>
+                            <MenuItem Header="Help" Click="Help"/>
+                        </MenuItem>
+                    </Menu>
+                    <Separator />
+                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Height="35" Width="100">
+                        <DockPanel>
+                            <Image Source="Icons/icon_play.png" Height="16" Width="16"/>
+                            <TextBlock Text="START BATCH"/>
+                        </DockPanel>
+                    </Button>
+                    <Separator />
+                </ToolBar>
+            </ToolBarTray>
+        </DockPanel>
+        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,40,0,0" Width="271.523">
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar Loaded="ToolBar_Loaded">
+                    <Menu Name="_menuAddMethod">
+                        <MenuItem  Header="Add Method " Padding="-3,2,2,2">
+                            <MenuItem.Icon>
+                                <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
+                            </MenuItem.Icon>
+                            <MenuItem Header="New Case">
+
+                            </MenuItem>
+                            <MenuItem Header="Move">
+
+                            </MenuItem>
+                            <MenuItem Header="Remove Pattern">
+
+                            </MenuItem>
+                            <MenuItem Header="Replace">
+
+                            </MenuItem>
+                            <MenuItem Header="Trim">
+
+                            </MenuItem>
+                            <MenuItem Header="New Name">
+
+                            </MenuItem>
+                        </MenuItem>
+                    </Menu>
+                    <Separator />
+                    <Button Name="_btnClear" Padding="0,2,3,2">
+                        <DockPanel>
+                            <Image Source="Icons/icon_clear.png" Width="16" Height="16" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Clear"/>
+                        </DockPanel>
+                    </Button>
+                    <Separator />
+                    <Button Name="_btnTopMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_top.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Button Name="_btnUpMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_up.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Button Name="_btnDownMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_down.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Button Name="_btnBottomMenu" FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_bottom.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Separator />
+                </ToolBar>
+            </ToolBarTray>
+        </DockPanel>
+        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80">
+            <ToolBarTray DockPanel.Dock="Top">
+                <ToolBar Loaded="ToolBar_Loaded">
+                    <Button Name="_btnNewPreset" Width="20" Height="20" Padding="4,2">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_new.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Separator />
+                    <Button Name="_btnSavePreset" Width="20" Height="20" Padding="4,2" Margin="0">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_save.png"/>
+                        </Button.Background>
+                    </Button>
+                    <Separator />
+                    <TextBlock Text="Preset:" VerticalAlignment="Center"/>
+                    <ComboBox Name="_comboboxPreset" Width="100" Loaded="ComboBox_Load">
+                    </ComboBox>
+                    <Separator />
+                </ToolBar>
+            </ToolBarTray>
+        </DockPanel>
+        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,140">
+            <ToggleButton Name="_btnNewCase" Width="250" Height="30" Click="BtnNewCase">
+                <DockPanel HorizontalAlignment="Right" Width="250">
+                    <TextBlock Text="New Case" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
+                    <CheckBox  Margin="100,3,0,0" Name="_checkboxNewCase" IsChecked="True"/>
+                </DockPanel>
+            </ToggleButton>
+            <ToggleButton Name="_btnReplace" Width="250" Height="25" Click="BtnReplace">
+                <DockPanel HorizontalAlignment="Right" Width="250">
+                    <TextBlock Text="Replace" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
+                    <CheckBox  Margin="115,3,0,0" Name="_checkboxReplace" IsChecked="True" />
+                </DockPanel>
+            </ToggleButton>
+            <ToggleButton Name="_btnMove" Width="250" Height="25" Click="BtnMove">
+                <DockPanel HorizontalAlignment="Right" Width="250">
+                    <TextBlock Text="Move" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
+                    <CheckBox  Margin="131,3,0,0" Name="_checkboxMove" IsChecked="True" />
+                </DockPanel>
+            </ToggleButton>
+            <ToggleButton Name="_btnFunc1" Width="250" Height="25" Click="BtnFun1">
+                <DockPanel HorizontalAlignment="Right" Width="250">
+                    <TextBlock Text="Func 1" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
+                    <CheckBox  Margin="124,3,0,0" Name="_checkboxFunc1" IsChecked="True"/>
+                </DockPanel>
+            </ToggleButton>
+            <ToggleButton Name="_btnFunc2" Width="250" Height="25" Click="BtnFun2">
+                <DockPanel HorizontalAlignment="Right" Width="250">
+                    <TextBlock Text="Func 2" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
+                    <CheckBox  Margin="124,3,0,0" Name="_checkboxFunc2" IsChecked="True"/>
+                </DockPanel>
+            </ToggleButton>
+            <ToggleButton Name="_togglebtnFunc2" Width="250" Height="25" Click="ToggleBtn">
+                <DockPanel HorizontalAlignment="Right" Width="250">
+                    <TextBlock Text="Func 2" Margin="50,0,0,0" FontWeight="Bold" FontSize="16"/>
+                    <CheckBox  Margin="124,3,0,0" Name="_checkboxToggle" IsChecked="True"/>
+                </DockPanel>
+            </ToggleButton>
+        </StackPanel>
     </Grid>
 </Window>
