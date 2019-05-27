@@ -8,12 +8,6 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property1.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property2.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property3.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property4.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property5.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property6.png")]
-[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/icon_property7.png")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("icons/refresh_30px.png")]
 
 

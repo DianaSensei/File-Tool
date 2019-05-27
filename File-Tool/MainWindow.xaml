@@ -13,85 +13,58 @@
         TextOptions.TextRenderingMode="Auto"   
         mc:Ignorable="d"
         Icon="Icons/icon_app.png"
-        ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
         Title="Batch Rename" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"></ColumnDefinition>
-            <ColumnDefinition Width="*">
-
-            </ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,5,0" Height="410" VerticalAlignment="Top" Width="490">
-            <TabItem Grid.Column="1" Header="Rename Files" Height="35" >
+        <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,0,0" Height="Auto" VerticalAlignment="Top" Width="Auto">
+            <TabItem Grid.Column="1" Header="Rename Files" Height="35">
                 <Grid Background="White" Margin="0,0,0,0">
-                    <DockPanel>
-
-                    </DockPanel>
+                    <DataGrid GridLinesVisibility="All"
+                              VerticalGridLinesBrush="LightGray"
+                              HorizontalGridLinesBrush="LightGray" 
+                              Name="FileShow" AutoGenerateColumns="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="FileName" IsReadOnly="True" Width="150" Binding="{Binding FileName }" />
+                            <DataGridTextColumn Header="New FileName" Width="150" Binding="{Binding NewFileName}" />
+                            <DataGridTextColumn Header="Path" Width="150" Binding="{Binding FilePath}" />
+                            <DataGridTextColumn Header="New Path" Width="150" Binding="{Binding NewFilePath}" />
+                            <DataGridTextColumn Header="Error" Width="Auto" Binding="{Binding FileError}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
             <TabItem Grid.Column="1" Header="Rename Folder">
                 <Grid Background="White">
-                    <DockPanel>
-                        <ToolBarTray HorizontalAlignment="Left" VerticalAlignment="Top">
-                            <ToolBar Loaded="ToolBar_Loaded">
-                                <Menu>
-                                    <MenuItem  Name="_btn_tab2_Add" Header="Add " Margin="0,1,0,0" ScrollViewer.VerticalScrollBarVisibility="Disabled" Grid.IsSharedSizeScope="True" Padding="-3,2,2,2" VerticalContentAlignment="Center">
-                                        <MenuItem.Icon>
-                                            <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
-                                        </MenuItem.Icon>
-                                        <MenuItem Header="File" Click="MenuItem_Tab_AddFile"/>
-                                        <MenuItem Header="Folder" Click="MenuItem_Tab_AddFolder"/>
-                                    </MenuItem>
-                                </Menu>
-                                <Separator />
-                                <Button Name="_btnTopShowFolder" Click="MenuItem_Tab_Top"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_top.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Button Name="_btnUpShowFolder" Click="MenuItem_Tab_Up"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_up.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Button Name="_btnDownShowFolder" Click="MenuItem_Tab_Down"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_down.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Button Name="_btnBottomShowFolder" Click="MenuItem_Tab_Bottom"
-                                        FontSize="16" Margin="0,0,0,0" VerticalAlignment="Stretch" Width="25" Height="25" HorizontalAlignment="Stretch">
-                                    <Button.Background>
-                                        <ImageBrush ImageSource="Icons/icon_bottom.png"/>
-                                    </Button.Background>
-                                </Button>
-                                <Separator />
-                            </ToolBar>
-                        </ToolBarTray>
-                    </DockPanel>
+                    <DataGrid Name="FolderShow" AutoGenerateColumns="False" HorizontalScrollBarVisibility="Auto">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="FolderName" IsReadOnly="True" Width="150" Binding="{Binding FolderName}" />
+                            <DataGridTextColumn Header="New FolderName" Width="150" Binding="{Binding NewFolderName}" />
+                            <DataGridTextColumn Header="Path" Width="150" Binding="{Binding FolderPath}" />
+                            <DataGridTextColumn Header="New Path" Width="150" Binding="{Binding NewFolderPath}" />
+                            <DataGridTextColumn Header="Error" Width="Auto" Binding="{Binding FolderError}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
                 </Grid>
             </TabItem>
         </TabControl>
-        <ToolBarTray Grid.Column="1" DockPanel.Dock="Top" Height="35" Width="340" Margin="192,1,18,375">
+        <ToolBarTray Background="White" Grid.Column="1" Height="35" Width="340" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="192,2,0,0" >
             <ToolBar Loaded="ToolBar_Loaded">
-                <Menu>
-                    <MenuItem Name="_btn_tab_Add" Header="Add " Margin="-7,5,0,0" Padding="-4,5,0,5">
-                        <MenuItem.Icon>
-                            <Image Source="Icons/icon_add_16.png" VerticalAlignment="Center" />
-                        </MenuItem.Icon>
-                        <MenuItem Header="File" Click="MenuItem_Tab_AddFile"/>
-                        <MenuItem Header="Folder" Click="MenuItem_Tab_AddFolder"/>
-                    </MenuItem>
-                </Menu>
+                <Button Name="_btnAdd" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0"
+                        Click="BtnAdd_Click" Height="35">
+                    <StackPanel Orientation="Horizontal" Margin="-10">
+                        <Image Source="Icons/icon_add.png" Height="20" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <Label Content="Add"/>
+                    </StackPanel>
+                </Button>
                 <Separator />
-                <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}" Margin="-10,0,-10,0" Click="_btnRemove_Click" Height="35">
-                    <StackPanel Orientation="Horizontal" Margin="-3">
+                <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}" Margin="-5,0,-5,0"
+                        Click="BtnRemove_Click" Height="35">
+                    <StackPanel Orientation="Horizontal" Margin="-10">
                         <Image Source="Icons/icon_clear.png" Height="20"  RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Padding="5" Text="Remove"/>
                     </StackPanel>
@@ -140,7 +113,7 @@
                         </MenuItem>
                     </Menu>
                     <Separator />
-                    <Button Name="_btnStartBatch" Click="BtnRefresh" Width="70" Height="35" Style="{StaticResource MaterialDesignToolButton}">
+                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="70" Height="35" Style="{StaticResource MaterialDesignToolButton}">
                         <StackPanel Orientation="Horizontal" Margin="-10">
                             <Image Source="Icons/icon_play.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
                             <TextBlock Text="START" Padding="5"/>
@@ -153,13 +126,13 @@
         <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35">
             <ToolBarTray DockPanel.Dock="Top" Height="35">
                 <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnNewPreset" Width="25" Height="25" Style="{StaticResource MaterialDesignRaisedButton}">
+                    <Button Name="_btnNewPreset" Width="25" Click="BtnNewPreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton}">
                         <Button.Background>
                             <ImageBrush ImageSource="Icons/icon_new.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Button.Background>
                     </Button>
                     <Separator />
-                    <Button Name="_btnSavePreset" Width="25" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
+                    <Button Name="_btnSavePreset" Width="25" Click="BtnSavePreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
                         <Button.Background>
                             <ImageBrush ImageSource="Icons/icon_save.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Button.Background>

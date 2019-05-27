@@ -111,7 +111,6 @@
     <Folder Include="Images\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icons\icon_add_16.png" />
     <Resource Include="Icons\icon_app.png" />
     <Resource Include="Icons\icon_bottom.png" />
     <Resource Include="Icons\icon_clear.png" />
@@ -135,6 +134,12 @@
     <Resource Include="Icons\icon_property5.png" />
     <Resource Include="Icons\icon_property6.png" />
     <Resource Include="Icons\icon_property7.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\icon_add.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\refresh_30px.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

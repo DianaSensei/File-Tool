@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +19,24 @@ namespace BatchRename
 {
     public partial class MainWindow : Window
     {
-        
+        ObservableCollection<File> fileList = new ObservableCollection<File>();
+        ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
+        public class File
+        {
+            public string FileName { get; set; }
+            public string NewFileName { get; set; }
+            public string FilePath { get; set; }
+            public string NewFilePath { get; set; }
+            public string FileError { get; set; }
+        }
+        public class Folder : File
+        {
+            public string FolderName { get; set; }
+            public string NewFolderName { get; set; }
+            public string FolderPath { get; set; }
+            public string NewFolderPath { get; set; }
+            public string FolderError { get; set; }
+        }
         public MainWindow()
         {
             InitializeComponent();
@@ -36,7 +55,6 @@ namespace BatchRename
                 mainPanelBorder.Margin = new Thickness();
             }
         }
-       
         private void MenuItem_Tab_AddFile(object sender, RoutedEventArgs e)
         {
 
@@ -70,12 +88,14 @@ namespace BatchRename
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
 
+            fileList.Add(new File() { FileName = "A", NewFileName = "a1", FilePath = "A", FileError = "DSA" });
         }
 
         private void BtnRefresh(object sender, RoutedEventArgs e)
         {
-           
             _comboboxPreset.SelectedIndex = 0;
+            fileList.Clear();
+            folderList.Clear();
         }
 
         private void ShowAbout(object sender, RoutedEventArgs e)
@@ -90,15 +110,12 @@ namespace BatchRename
         private void ComboBox_Load(object sender, RoutedEventArgs e)
         {
             _comboboxPreset.Items.Add("Default");
-            _comboboxPreset.Items.Add("Preset 01");
-            _comboboxPreset.Items.Add("Preset 02");
-            _comboboxPreset.Items.Add("Preset 03");
             _comboboxPreset.SelectedIndex = 0;
         }
         
         private void BtnNewCase(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("New Case");
+            
         }
 
         private void BtnReplace(object sender, RoutedEventArgs e)
@@ -134,11 +151,41 @@ namespace BatchRename
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ComboBox_Load(sender,new RoutedEventArgs());
+            FileShow.ItemsSource = fileList;
+           
         }
 
-        private void _btnRemove_Click(object sender, RoutedEventArgs e)
+        private void BtnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if(FileShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex==0)
+                fileList.RemoveAt(FileShow.SelectedIndex);
+            if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
+                folderList.RemoveAt(FolderShow.SelectedIndex);
+        }
+
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+            if (_tabcontrolShow.SelectedIndex == 0)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                    BtnStartBatch(sender, new RoutedEventArgs());
+            }
+            else
+            {
+                
+            }
+        }
+
+
+        private void BtnNewPreset(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void BtnSavePreset(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 }
