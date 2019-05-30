@@ -15,7 +15,141 @@
         Icon="Icons/icon_app.png"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
-        Title="Batch Rename" Height="450" Width="800">
+        
+        Title="Batch Rename" MinHeight="400" Height="400" MinWidth="950">
+    <Window.Resources>
+        <Style x:Key="ScrollBarTrackThumb"
+        TargetType="{x:Type Thumb}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Thumb}">
+                        <Grid x:Name="Grid">
+                            <Rectangle HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch"
+                                Width="Auto"
+                                Height="Auto"
+                                Fill="Transparent" />
+                            <Border x:Name="CornerScrollBarRectangle"
+                            CornerRadius="5"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Width="Auto"
+                            Height="Auto"
+                            Margin="0,1,0,1"
+                            Background="{TemplateBinding Background}" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Tag"
+                                Value="Horizontal">
+                                <Setter TargetName="CornerScrollBarRectangle"
+                                Property="Width"
+                                Value="Auto" />
+                                <Setter TargetName="CornerScrollBarRectangle"
+                                Property="Height"
+                                Value="6" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style TargetType="{x:Type ScrollBar}">
+            <Setter Property="Stylus.IsFlicksEnabled"
+            Value="false" />
+            <Setter Property="Foreground"
+            Value="#ADABAB" />
+            <Setter Property="Background"
+            Value="Transparent" />
+            <Setter Property="Width"
+            Value="7" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Grid x:Name="GridRoot"
+                        Width="7"
+                        Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.00001*" />
+                            </Grid.RowDefinitions>
+                            <Track x:Name="PART_Track"
+                            Grid.Row="0"
+                            IsDirectionReversed="true"
+                            Focusable="false">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb"
+                                    Background="{TemplateBinding Foreground}"
+                                    Style="{DynamicResource ScrollBarTrackThumb}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp"
+                                            Command="ScrollBar.PageDownCommand"
+                                            Opacity="0"
+                                            Focusable="false" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown"
+                                            Command="ScrollBar.PageUpCommand"
+                                            Opacity="0"
+                                            Focusable="false" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger SourceName="Thumb"
+                                Property="IsMouseOver"
+                                Value="true">
+                                <Setter Value="{DynamicResource ButtonSelectBrush}"
+                                TargetName="Thumb"
+                                Property="Background" />
+                            </Trigger>
+                            <Trigger SourceName="Thumb"
+                                Property="IsDragging"
+                                Value="true">
+                                <Setter Value="{DynamicResource DarkBrush}"
+                                TargetName="Thumb"
+                                Property="Background" />
+                            </Trigger>
+
+                            <Trigger Property="IsEnabled"
+                                Value="false">
+                                <Setter TargetName="Thumb"
+                                Property="Visibility"
+                                Value="Collapsed" />
+                            </Trigger>
+                            <Trigger Property="Orientation"
+                                Value="Horizontal">
+                                <Setter TargetName="GridRoot"
+                                Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter TargetName="PART_Track"
+                                Property="LayoutTransform">
+                                    <Setter.Value>
+                                        <RotateTransform Angle="-90" />
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Width"
+                                Value="Auto" />
+                                <Setter Property="Height"
+                                Value="8" />
+                                <Setter TargetName="Thumb"
+                                Property="Tag"
+                                Value="Horizontal" />
+                                <Setter TargetName="PageDown"
+                                Property="Command"
+                                Value="ScrollBar.PageLeftCommand" />
+                                <Setter TargetName="PageUp"
+                                Property="Command"
+                                Value="ScrollBar.PageRightCommand" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="280"></ColumnDefinition>
@@ -24,11 +158,30 @@
         <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,0,0" Height="Auto" VerticalAlignment="Top" Width="Auto">
             <TabItem Grid.Column="1" Header="Rename Files" Height="35">
                 <Grid Background="White" Margin="0,0,0,0">
+                    <Grid.Resources>
+                        <!--DataTemplate for Published Date column defined in Grid.Resources.  PublishDate is a property on the ItemsSource of type DateTime -->
+                        <DataTemplate x:Key="DateTemplate" >
+                            <StackPanel Width="20" Height="30">
+                                <Border Background="LightBlue" BorderBrush="Black" BorderThickness="1">
+                                    <TextBlock Text="{Binding PublishDate, StringFormat={}{0:MMM}}" FontSize="8" HorizontalAlignment="Center" />
+                                </Border>
+                                <Border Background="White" BorderBrush="Black" BorderThickness="1">
+                                    <TextBlock Text="{Binding PublishDate, StringFormat={}{0:yyyy}}" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" />
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                        <!--DataTemplate for the Published Date column when in edit mode. -->
+                        <DataTemplate x:Key="EditingDateTemplate">
+                            <DatePicker SelectedDate="{Binding PublishDate}"  />
+                        </DataTemplate>
+                    </Grid.Resources>
                     <DataGrid GridLinesVisibility="All"
                               VerticalGridLinesBrush="LightGray"
                               HorizontalGridLinesBrush="LightGray" 
                               Name="FileShow" AutoGenerateColumns="False">
                         <DataGrid.Columns>
+                            <DataGridTemplateColumn></DataGridTemplateColumn>
+                            <DataGridTemplateColumn Header="Publish Date" CellTemplate="{StaticResource DateTemplate}" CellEditingTemplate="{StaticResource EditingDateTemplate}" />
                             <DataGridTextColumn Header="FileName" IsReadOnly="True" Width="150" Binding="{Binding FileName }" />
                             <DataGridTextColumn Header="New FileName" Width="150" Binding="{Binding NewFileName}" />
                             <DataGridTextColumn Header="Path" Width="150" Binding="{Binding FilePath}" />
@@ -113,7 +266,7 @@
                         </MenuItem>
                     </Menu>
                     <Separator />
-                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="70" Height="35" Style="{StaticResource MaterialDesignToolButton}">
+                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="70" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal" Margin="-10">
                             <Image Source="Icons/icon_play.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
                             <TextBlock Text="START" Padding="5"/>
@@ -139,49 +292,117 @@
                     </Button>
                     <Separator />
                     <TextBlock Text="Preset:" VerticalAlignment="Center"/>
-                    <ComboBox Name="_comboboxPreset" Width="130"/>
+                    <ComboBox Name="_comboboxPreset" Width="100"/>
+                    <Button Name="_btnLoadFilePreset" Width="25" Click="BtnLoadPreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
+                        <Button.Background>
+                            <ImageBrush ImageSource="Icons/icon_openfile.png" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Button.Background>
+                    </Button>
                     <Separator />
                 </ToolBar>
             </ToolBarTray>
         </DockPanel>
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="180,80,0,0" Width="50">
+        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" Width="280">
             <Separator />
-            <ToggleButton Name="_btnNewCase" Width="60" Height="35" Click="BtnNewCase"/>
+            <StackPanel Name="_stackPanel_NewCase">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Image Source="Icons/icon_property1.png" Width="25" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="New Case"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1"  Width="50" Name="_btnNewCase" Height="35" Click="BtnNewCase" />
+                </Grid>
+                
+                    <ComboBox Name="_comboboxNewCase"
+                              Width="150" Height="35" Margin="0,0,20,0"
+                              HorizontalAlignment="Right" 
+                              HorizontalContentAlignment="Center"
+                              VerticalContentAlignment="Center">
+                        <ComboBoxItem Content="To UpperCase" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <ComboBoxItem Content="To LowerCase" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                        <ComboBoxItem Content="Other" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                    </ComboBox>
+            </StackPanel>
             <Separator />
-            <ToggleButton Name="_btnReplace"  Width="60" Height="35" Click="BtnReplace"/>
+            <StackPanel Name="_stackPanel_Replace">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Image Source="Icons/icon_property2.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Replace"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnReplace" Height="35" Click="BtnReplace" />
+                </Grid>
+                <StackPanel Name="_stackPanelReplace">
+                    <TextBox Name="_textboxReplace" Height="35" Margin="43,0,20,0"
+                         HorizontalContentAlignment="Right"
+                         VerticalContentAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Height="35">
+                        <TextBlock Text="By" FontSize="20" Margin="10,0,0,0" Height="35"/>
+                        <TextBox Name="_textboxReplaceBy" Margin="12,0,0,0" Width="220"  Height="35"
+                             HorizontalContentAlignment="Right"
+                             VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
             <Separator />
-            <ToggleButton Name="_btnMove" Width="60" Height="35" Click="BtnMove"/>
+            <StackPanel Name="_stackPanel_Move">
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Image Source="Icons/icon_property3.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Move"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnMove" Height="35" Click="BtnMove"/>
+                    
+                </Grid>
+                <StackPanel Name="_stackPanelMove" HorizontalAlignment="Right" Margin="0,0,15,0" Orientation="Horizontal">
+                    <RadioButton GroupName="_radiobtnMove" IsChecked="True" Content="ISBN - FileName" Padding="0,0,10,0"/>
+                    <RadioButton  GroupName="_radiobtnMove" Content="ISBN - FileName" Padding="0,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
             <Separator />
-            <ToggleButton Name="_btnFunc1" Width="60" Height="35" Click="BtnFun1"/>
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Image Source="Icons/icon_property4.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Fullname normalize"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnFullName" Height="35" Click="BtnFullName"/>
+                </Grid>
+            </StackPanel>
             <Separator />
-            <ToggleButton Name="_btnFunc2" Width="60" Height="35" Click="BtnFun2"/>
-            <Separator />
+            <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="230"></ColumnDefinition>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Image Source="Icons/icon_property5.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        <TextBlock Margin="7,5,0,-5"  Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Unique name"/>
+                    </StackPanel>
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnUniqueName" Height="35" Click="BtnUnique"/>
+                </Grid>
+            </StackPanel>
+            <Separator/>
         </StackPanel>
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,80" Width="35">
-            <Separator />
-            <Image Source="Icons/icon_property1.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-            <Separator />
-            <Image Source="Icons/icon_property2.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-            <Separator />
-            <Image Source="Icons/icon_property3.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-            <Separator />
-            <Image Source="Icons/icon_property4.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-            <Separator />
-            <Image Source="Icons/icon_property5.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-            <Separator />
-        </StackPanel>
-        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="35,80" Width="150">
-            <Separator />
-            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="New Case"/>
-            <Separator />
-            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Replace"/>
-            <Separator />
-            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Move"/>
-            <Separator />
-            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Func1"/>
-            <Separator />
-            <TextBlock Margin="0,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Func2"/>
-            <Separator />
-        </StackPanel>
+        
     </Grid>
+    
 </Window>
