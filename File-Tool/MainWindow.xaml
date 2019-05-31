@@ -15,8 +15,8 @@
         Icon="Icons/icon_app.png"
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
-        
-        Title="Batch Rename" MinHeight="400" Height="400" MinWidth="950">
+        Width="Auto" Height="450"
+        Title="Batch Rename" x:Name="batchrename" MinHeight="450"  MinWidth="850">
     <Window.Resources>
         <Style x:Key="ScrollBarTrackThumb"
         TargetType="{x:Type Thumb}">
@@ -155,54 +155,42 @@
             <ColumnDefinition Width="280"></ColumnDefinition>
             <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <Grid.Resources>
+            <DataTemplate x:Key="ShowErrorTemplate">
+                <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}"  VerticalAlignment="Center"/>
+            </DataTemplate>
+        </Grid.Resources>
         <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,0,0" Height="Auto" VerticalAlignment="Top" Width="Auto">
             <TabItem Grid.Column="1" Header="Rename Files" Height="35">
-                <Grid Background="White" Margin="0,0,0,0">
-                    <Grid.Resources>
-                        <!--DataTemplate for Published Date column defined in Grid.Resources.  PublishDate is a property on the ItemsSource of type DateTime -->
-                        <DataTemplate x:Key="DateTemplate" >
-                            <StackPanel Width="20" Height="30">
-                                <Border Background="LightBlue" BorderBrush="Black" BorderThickness="1">
-                                    <TextBlock Text="{Binding PublishDate, StringFormat={}{0:MMM}}" FontSize="8" HorizontalAlignment="Center" />
-                                </Border>
-                                <Border Background="White" BorderBrush="Black" BorderThickness="1">
-                                    <TextBlock Text="{Binding PublishDate, StringFormat={}{0:yyyy}}" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" />
-                                </Border>
-                            </StackPanel>
-                        </DataTemplate>
-                        <!--DataTemplate for the Published Date column when in edit mode. -->
-                        <DataTemplate x:Key="EditingDateTemplate">
-                            <DatePicker SelectedDate="{Binding PublishDate}"  />
-                        </DataTemplate>
-                    </Grid.Resources>
-                    <DataGrid GridLinesVisibility="All"
+                <DataGrid GridLinesVisibility="All"
+                              CanUserAddRows="False"
                               VerticalGridLinesBrush="LightGray"
                               HorizontalGridLinesBrush="LightGray" 
                               Name="FileShow" AutoGenerateColumns="False">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn></DataGridTemplateColumn>
-                            <DataGridTemplateColumn Header="Publish Date" CellTemplate="{StaticResource DateTemplate}" CellEditingTemplate="{StaticResource EditingDateTemplate}" />
-                            <DataGridTextColumn Header="FileName" IsReadOnly="True" Width="150" Binding="{Binding FileName }" />
-                            <DataGridTextColumn Header="New FileName" Width="150" Binding="{Binding NewFileName}" />
-                            <DataGridTextColumn Header="Path" Width="150" Binding="{Binding FilePath}" />
-                            <DataGridTextColumn Header="New Path" Width="150" Binding="{Binding NewFilePath}" />
-                            <DataGridTextColumn Header="Error" Width="Auto" Binding="{Binding FileError}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
+                    
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
+                        <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileInfomation.Name ,Mode=OneWay}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="New FileName" MinWidth="150" Width="SizeToCells" Binding="{Binding NewName}" />
+                        <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FileInfomation.FullName,Mode=OneWay}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Error" MinWidth="100" Width="SizeToCells" Binding="{Binding Error,Mode=OneWay}" IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
-            <TabItem Grid.Column="1" Header="Rename Folder">
-                <Grid Background="White">
-                    <DataGrid Name="FolderShow" AutoGenerateColumns="False" HorizontalScrollBarVisibility="Auto">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="FolderName" IsReadOnly="True" Width="150" Binding="{Binding FolderName}" />
-                            <DataGridTextColumn Header="New FolderName" Width="150" Binding="{Binding NewFolderName}" />
-                            <DataGridTextColumn Header="Path" Width="150" Binding="{Binding FolderPath}" />
-                            <DataGridTextColumn Header="New Path" Width="150" Binding="{Binding NewFolderPath}" />
-                            <DataGridTextColumn Header="Error" Width="Auto" Binding="{Binding FolderError}" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </Grid>
+            <TabItem Grid.Column="1" Header="Rename Folder" Height="35">
+                <DataGrid Name="FolderShow" AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              VerticalGridLinesBrush="LightGray"
+                              HorizontalGridLinesBrush="LightGray"
+                          GridLinesVisibility="All">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
+                        <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderInfomation.Name ,Mode=OneWay}"  IsReadOnly="True"/>
+                        <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" />
+                        <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FolderInfomation.FullName,Mode=OneWay}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Error"  MinWidth="100" Width="SizeToCells" Binding="{Binding Error,Mode=OneWay}" IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
             </TabItem>
         </TabControl>
         <ToolBarTray Background="White" Grid.Column="1" Height="35" Width="340" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="192,2,0,0" >
@@ -223,7 +211,7 @@
                     </StackPanel>
                 </Button>
                 <Separator/>
-                <Button Name="_btnTopShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Top" Width="25" Height="25">
+                <!--Button Name="_btnTopShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Top" Width="25" Height="25">
                     <Button.Background>
                         <ImageBrush ImageSource="Icons/icon_top.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                     </Button.Background>
@@ -243,7 +231,7 @@
                         <ImageBrush ImageSource="Icons/icon_bottom.png" RenderOptions.BitmapScalingMode="HighQuality"/>
                     </Button.Background>
                 </Button>
-                <Separator />
+                <Separator /-->
             </ToolBar>
         </ToolBarTray>
         <DockPanel  VerticalAlignment="Top" HorizontalAlignment="Left">
@@ -314,18 +302,18 @@
                         <Image Source="Icons/icon_property1.png" Width="25" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="New Case"/>
                     </StackPanel>
-                    <ToggleButton Grid.Column="1"  Width="50" Name="_btnNewCase" Height="35" Click="BtnNewCase" />
+                    <ToggleButton Grid.Column="1"  Width="50" Name="_btnNewCase" Height="35" Click="BtnNewCase" IsChecked="{Binding ElementName=batchrename, Path=IsNewCase,Mode=TwoWay}" />
                 </Grid>
-                
-                    <ComboBox Name="_comboboxNewCase"
+
+                <ComboBox Name="_comboboxNewCase" SelectionChanged="_comboboxNewCase_SelectionChanged"
                               Width="150" Height="35" Margin="0,0,20,0"
                               HorizontalAlignment="Right" 
                               HorizontalContentAlignment="Center"
                               VerticalContentAlignment="Center">
-                        <ComboBoxItem Content="To UpperCase" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <ComboBoxItem Content="To LowerCase" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                        <ComboBoxItem Content="Other" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                    </ComboBox>
+                    <ComboBoxItem Name="_comboboxitem_ToupperCase" Content="To UpperCase"   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <ComboBoxItem Name="_comboboxitem_TolowerCase"  Content="To LowerCase" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                    <ComboBoxItem Name="_comboboxitem_FirstUpperCase"  Content="First Upper" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
+                </ComboBox>
             </StackPanel>
             <Separator />
             <StackPanel Name="_stackPanel_Replace">
@@ -338,7 +326,7 @@
                         <Image Source="Icons/icon_property2.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Replace"/>
                     </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnReplace" Height="35" Click="BtnReplace" />
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnReplace" Height="35" Click="BtnReplace" IsChecked="{Binding ElementName=batchrename, Path=IsReplace,Mode=TwoWay}"/>
                 </Grid>
                 <StackPanel Name="_stackPanelReplace">
                     <TextBox Name="_textboxReplace" Height="35" Margin="43,0,20,0"
@@ -364,8 +352,8 @@
                         <Image Source="Icons/icon_property3.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Move"/>
                     </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnMove" Height="35" Click="BtnMove"/>
-                    
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnMove" Height="35" Click="BtnMove" IsChecked="{Binding ElementName=batchrename, Path=IsMove,Mode=TwoWay}"/>
+
                 </Grid>
                 <StackPanel Name="_stackPanelMove" HorizontalAlignment="Right" Margin="0,0,15,0" Orientation="Horizontal">
                     <RadioButton GroupName="_radiobtnMove" IsChecked="True" Content="ISBN - FileName" Padding="0,0,10,0"/>
@@ -383,7 +371,7 @@
                         <Image Source="Icons/icon_property4.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Fullname normalize"/>
                     </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnFullName" Height="35" Click="BtnFullName"/>
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnFullName" Height="35" Click="BtnFullName" IsChecked="{Binding ElementName=batchrename, Path=IsFullnameNomalize,Mode=TwoWay}"/>
                 </Grid>
             </StackPanel>
             <Separator />
@@ -397,12 +385,12 @@
                         <Image Source="Icons/icon_property5.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
                         <TextBlock Margin="7,5,0,-5"  Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Unique name"/>
                     </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnUniqueName" Height="35" Click="BtnUnique"/>
+                    <ToggleButton Grid.Column="1" Width="50" Name="_btnUniqueName" Height="35" Click="BtnUnique" IsChecked="{Binding ElementName=batchrename, Path=IsUniqueName,Mode=TwoWay}"/>
                 </Grid>
             </StackPanel>
             <Separator/>
         </StackPanel>
-        
+
     </Grid>
-    
+
 </Window>

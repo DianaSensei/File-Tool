@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,44 +15,201 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
 namespace BatchRename
 {
     public partial class MainWindow : Window
     {
+        #region Attributes
+        private int newCaseType;
+        #region NewCase Status
+        public bool IsNewCase
+        {
+            get { return (bool)GetValue(IsNewCaseProperty); }
+            set { SetValue(IsNewCaseProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for 
+        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsNewCaseProperty =
+            DependencyProperty.Register("IsNewCase", typeof(bool),
+            typeof(MainWindow), new UIPropertyMetadata(false));
+        #endregion
+        private string moveString;
+        #region Move Status
+        public bool IsMove
+        {
+            get { return (bool)GetValue(IsMoveProperty); }
+            set { SetValue(IsMoveProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for 
+        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsMoveProperty =
+            DependencyProperty.Register("IsMove", typeof(bool),
+            typeof(MainWindow), new UIPropertyMetadata(false));
+        #endregion
+        #region FullnameNomalize Status
+        public bool IsFullnameNomalize
+        {
+            get { return (bool)GetValue(IsFullnameNomalizeProperty); }
+            set { SetValue(IsFullnameNomalizeProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for 
+        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsFullnameNomalizeProperty =
+            DependencyProperty.Register("IsFullnameNomalize", typeof(bool),
+            typeof(MainWindow), new UIPropertyMetadata(false));
+        #endregion
+        private string findString;
+        private string replaceString;
+        #region Replace Status
+        public bool IsReplace
+        {
+            get { return (bool)GetValue(IsReplaceProperty); }
+            set { SetValue(IsReplaceProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for 
+        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsReplaceProperty =
+            DependencyProperty.Register("IsReplace", typeof(bool),
+            typeof(MainWindow), new UIPropertyMetadata(false));
+        #endregion
+        #region UniqueName Status
+        public bool IsUniqueName
+        {
+            get { return (bool)GetValue(IsUniqueNameProperty); }
+            set { SetValue(IsUniqueNameProperty, value); }
+        }
+        // Using a DependencyProperty as the backing store for 
+        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsUniqueNameProperty =
+            DependencyProperty.Register("IsUniqueName", typeof(bool),
+            typeof(MainWindow), new UIPropertyMetadata(false));
+        #endregion
+        #endregion
+        public class ObservableHashSetCollection<T> : ObservableCollection<T>
+        {
+            public Boolean AddUnique(T item)
+            {
+                if (Contains(item))
+                    return false;
+                base.Add(item);
+                return true;
+            }
+        }
         /// <summary>
         /// Array file
         /// </summary>
+
         ObservableCollection<File> fileList = new ObservableCollection<File>();
+
         /// <summary>
         /// Array Folder
         /// </summary>
         ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
-        /// <summary>
-        /// File Info
-        /// </summary>
-        public class File
+        #region File and Folder Class
+        public class File : INotifyPropertyChanged
         {
-            public string FileName { get; set; }
-            public string NewFileName { get; set; }
-            public string FilePath { get; set; }
-            public string NewFilePath { get; set; }
-            public string FileError { get; set; }
+            private string newName;
+            private string error;
+            private string errorStatus;
+            private FileInfo _FileInfomation;
+            public FileInfo FileInfomation
+            {
+                get => _FileInfomation; set
+                {
+                    _FileInfomation = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string NewName
+            {
+                get => newName; set
+                {
+                    newName = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string Error
+            {
+                get => error; set
+                {
+                    error = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string ErrorStatus
+            {
+                get => errorStatus; set
+                {
+                    errorStatus = value;
+                    RaiseChangeEvent();
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            void RaiseChangeEvent([CallerMemberName]string propertyName = "")
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
         }
-        /// <summary>
-        /// Folder Info
-        /// </summary>
-        public class Folder : File
+        public class Folder : INotifyPropertyChanged
         {
-            public string FolderName { get; set; }
-            public string NewFolderName { get; set; }
-            public string FolderPath { get; set; }
-            public string NewFolderPath { get; set; }
-            public string FolderError { get; set; }
+            private string newName;
+            private string error;
+            private string errorStatus;
+            private DirectoryInfo _FolderInfomation;
+            public DirectoryInfo FolderInfomation
+            {
+                get => _FolderInfomation; set
+                {
+                    _FolderInfomation = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string NewName
+            {
+                get => newName; set
+                {
+                    newName = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string Error
+            {
+                get => error; set
+                {
+                    error = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string ErrorStatus
+            {
+                get => errorStatus; set
+                {
+                    errorStatus = value;
+                    RaiseChangeEvent();
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            void RaiseChangeEvent([CallerMemberName]string propertyName = "")
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
         }
+        #endregion
+
         public MainWindow()
         {
             InitializeComponent();
+            //this.DataContext = this;
         }
+
+        #region PreLoad Resource
         private void ToolBar_Loaded(object sender, RoutedEventArgs e)
         {
             ToolBar toolBar = sender as ToolBar;
@@ -66,19 +224,44 @@ namespace BatchRename
                 mainPanelBorder.Margin = new Thickness();
             }
         }
- 
+        private void ComboBox_Load(object sender, RoutedEventArgs e)
+        {
+            _comboboxPreset.Items.Add("Default");
+            _comboboxPreset.SelectedIndex = 0;
+        }
+        /// <summary>
+        /// Help -> Show About
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ShowAbout(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Design by Thong", "About");
+        }
+        /// <summary>
+        /// Help -> Help
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Help(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("You can do it.", "Help");
+        }
+        #endregion
+
+        #region Item Navigation
         private void MenuItem_Tab_Top(object sender, RoutedEventArgs e)
         {
-            if(_tabcontrolShow.SelectedIndex == 0)
+            if (_tabcontrolShow.SelectedIndex == 0)
             {
                 if (fileList.Count > 0)
                 {
-                    fileList.Move(FileShow.SelectedIndex, 0);
+                    fileList.Remove((File)FileShow.SelectedItem);
                 }
             }
             else
             {
-               if (folderList.Count > 0)
+                if (folderList.Count > 0)
                 {
                     folderList.Move(FolderShow.SelectedIndex, 0);
                 }
@@ -90,14 +273,14 @@ namespace BatchRename
             {
                 if (fileList.Count > 0)
                 {
-                    fileList.Move(FileShow.SelectedIndex, fileList.Count-1);
+                    //fileList.Move(FileShow.SelectedIndex, fileList.Count-1);
                 }
             }
             else
             {
                 if (folderList.Count > 0)
                 {
-                    folderList.Move(FolderShow.SelectedIndex, folderList.Count-1);
+                    folderList.Move(FolderShow.SelectedIndex, folderList.Count - 1);
                 }
             }
         }
@@ -110,7 +293,7 @@ namespace BatchRename
                     if (FileShow.SelectedIndex < fileList.Count)
                     {
                         {
-                            fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex + 1);
+                            //fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex + 1);
                         }
                     }
                 }
@@ -137,7 +320,7 @@ namespace BatchRename
                     if (FileShow.SelectedIndex != 0)
                     {
                         {
-                            fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex - 1);
+                            // fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex - 1);
                         }
                     }
                 }
@@ -155,14 +338,13 @@ namespace BatchRename
                 }
             }
         }
+        #endregion
 
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
 
-            fileList.Add(new File() { FileName = "A", NewFileName = "a1", FilePath = "A", FileError = "DSA" });
-            
-            fileList.Add(new File() { FileName = "B", NewFileName = "B1", FilePath = "A", FileError = "DSA" });
-            
+
+
         }
         /// <summary>
         /// Refresh UI&Data
@@ -175,39 +357,8 @@ namespace BatchRename
             fileList.Clear();
             folderList.Clear();
         }
-        /// <summary>
-        /// Help -> Show About
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowAbout(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Design by Thong", "About");
-        }
-        /// <summary>
-        /// Help -> Help
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Help(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("You can do it.","Help");
-        }
-        /// <summary>
-        /// Load Preset
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ComboBox_Load(object sender, RoutedEventArgs e)
-        {
-            _comboboxPreset.Items.Add("Default");
-            _comboboxPreset.SelectedIndex = 0;
-        }
-        /// <summary>
-        /// Enable NewCase
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
+        #region Method
         private void BtnNewCase(object sender, RoutedEventArgs e)
         {
             if (_btnNewCase.IsChecked == true)
@@ -219,7 +370,6 @@ namespace BatchRename
                 this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
             }
         }
-
         private void BtnReplace(object sender, RoutedEventArgs e)
         {
             if (_btnReplace.IsChecked == true)
@@ -231,7 +381,6 @@ namespace BatchRename
                 this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
             }
         }
-
         private void BtnMove(object sender, RoutedEventArgs e)
         {
             if (_btnMove.IsChecked == true)
@@ -243,75 +392,150 @@ namespace BatchRename
                 this._stackPanel_Move.Children.Remove(_stackPanelMove);
             }
         }
-
-        private void BtnFun1(object sender, RoutedEventArgs e)
+        private void BtnFullName(object sender, RoutedEventArgs e)
         {
 
         }
-
-        private void BtnFun2(object sender, RoutedEventArgs e)
+        private void BtnUnique(object sender, RoutedEventArgs e)
         {
-                
-        }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            ComboBox_Load(sender,new RoutedEventArgs());
-            FileShow.ItemsSource = fileList;
-            
-            this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
-            this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-            this._stackPanel_Move.Children.Remove(_stackPanelMove);
         }
-
-        private void BtnRemove_Click(object sender, RoutedEventArgs e)
-        {
-            if(FileShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex==0)
-                fileList.RemoveAt(FileShow.SelectedIndex);
-            if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
-                folderList.RemoveAt(FolderShow.SelectedIndex);
-        }
+        #endregion
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (_tabcontrolShow.SelectedIndex == 0)
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                if (openFileDialog.ShowDialog() == true)
-                    BtnStartBatch(sender, new RoutedEventArgs());
+                using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
+                {
+                    System.Windows.Forms.DialogResult result = fbd.ShowDialog();
+
+                    if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        LoadFileFromPath(fbd.SelectedPath);
+                    }
+                }
             }
             else
             {
-                System.Windows.Forms.FolderBrowserDialog openFolderDialog = new System.Windows.Forms.FolderBrowserDialog();
-                openFolderDialog.ShowDialog();
-                    BtnStartBatch(sender, new RoutedEventArgs());
+                using (var fbd = new System.Windows.Forms.FolderBrowserDialog())
+                {
+                    System.Windows.Forms.DialogResult result = fbd.ShowDialog();
+
+                    if (result == System.Windows.Forms.DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                    {
+                        LoadFolderFromPath(fbd.SelectedPath);
+                    }
+                }
             }
         }
+        private void BtnRemove_Click(object sender, RoutedEventArgs e)
+        {
+            if (FileShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 0)
+                fileList.RemoveAt(FileShow.SelectedIndex);
+            if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
+                folderList.RemoveAt(FolderShow.SelectedIndex);
+        }
+        private Boolean LoadFileFromPath(string RootPath)
+        {
+            DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
+            if (FolderPath.Exists)
+            {
+                FileInfo[] listFileInfo = FolderPath.GetFiles();
+                foreach (var file in listFileInfo)
+                {
+                    fileList.Add(new File() { FileInfomation = file, NewName = file.Name, ErrorStatus = "ChartDonut" });
+                }
+                return true;
+            }
+            return false;
+        }
+        private Boolean LoadFolderFromPath(string RootPath)
+        {
+            DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
+            if (FolderPath.Exists)
+            {
+                DirectoryInfo[] listFolderInfo = FolderPath.GetDirectories();
+                foreach (var folder in listFolderInfo)
+                {
+                    folderList.Add(new Folder() { FolderInfomation = folder, NewName = folder.Name, ErrorStatus = "ChartDonut" });
+                }
+                return true;
+            }
+            return false;
+        }
 
-
+        #region Preset Method
         private void BtnNewPreset(object sender, RoutedEventArgs e)
         {
 
         }
-
         private void BtnSavePreset(object sender, RoutedEventArgs e)
         {
-            
-        }
-
-        private void BtnFullName(object sender, RoutedEventArgs e)
-        {
 
         }
-
-        private void BtnUnique(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void BtnLoadPreset(object sender, RoutedEventArgs e)
         {
 
+        }
+        #endregion
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
+            FileShow.ItemsSource = fileList;
+            FolderShow.ItemsSource = folderList;
+
+            IsNewCase = true;
+            IsMove = true;
+            IsReplace = true;
+            IsFullnameNomalize = true;
+            IsUniqueName = true;
+
+            ComboBox_Load(sender, new RoutedEventArgs());
+            //this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
+            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
+            //this._stackPanel_Move.Children.Remove(_stackPanelMove);
+        }
+
+        private void _comboboxNewCase_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_comboboxNewCase.SelectedIndex == 0)
+            {
+                foreach (var file in fileList)
+                {
+                    file.NewName = file.NewName.ToUpper();
+                }
+                foreach (var folder in folderList)
+                {
+                    folder.NewName = folder.NewName.ToUpper();
+                }
+
+            }
+            else if (_comboboxNewCase.SelectedIndex == 1)
+            {
+                foreach (var file in fileList)
+                {
+                    file.NewName = file.NewName.ToLower();
+                }
+                foreach (var folder in folderList)
+                {
+                    folder.NewName = folder.NewName.ToLower();
+                }
+
+            }
+            else
+            {
+                foreach (var file in fileList)
+                {
+                    file.NewName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(file.NewName.ToLower());
+                }
+                foreach (var folder in folderList)
+                {
+                    folder.NewName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(folder.NewName.ToLower());
+                }
+
+            }
         }
     }
 }
