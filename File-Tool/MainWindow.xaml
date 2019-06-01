@@ -163,6 +163,8 @@
         <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,0,0" Height="Auto" VerticalAlignment="Top" Width="Auto">
             <TabItem Grid.Column="1" Header="Rename Files" Height="35">
                 <DataGrid GridLinesVisibility="All"
+                          SelectionUnit="FullRow"
+                          SelectionMode="Extended"
                               CanUserAddRows="False"
                               VerticalGridLinesBrush="LightGray"
                               HorizontalGridLinesBrush="LightGray" 

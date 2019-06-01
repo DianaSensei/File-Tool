@@ -364,10 +364,14 @@ namespace BatchRename
             if (_btnNewCase.IsChecked == true)
             {
                 this._stackPanel_NewCase.Children.Add(_comboboxNewCase);
+              
             }
             else
             {
+                _comboboxNewCase.SelectedIndex = -1;
                 this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
+                foreach (var element in fileList)
+                    element.NewName = element.FileInfomation.Name;
             }
         }
         private void BtnReplace(object sender, RoutedEventArgs e)
@@ -486,16 +490,10 @@ namespace BatchRename
             FileShow.ItemsSource = fileList;
             FolderShow.ItemsSource = folderList;
 
-            IsNewCase = true;
-            IsMove = true;
-            IsReplace = true;
-            IsFullnameNomalize = true;
-            IsUniqueName = true;
-
             ComboBox_Load(sender, new RoutedEventArgs());
-            //this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
-            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-            //this._stackPanel_Move.Children.Remove(_stackPanelMove);
+            this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
+            this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
+            this._stackPanel_Move.Children.Remove(_stackPanelMove);
         }
 
         private void _comboboxNewCase_SelectionChanged(object sender, SelectionChangedEventArgs e)
