@@ -1,2 +1,2 @@
 # File-Tool
-App Rename File and Folder in windows use WPF
+Application Rename File and Folder in Windows use WPF

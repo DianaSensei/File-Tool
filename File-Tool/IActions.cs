@@ -6,20 +6,50 @@ using System.Threading.Tasks;
 
 namespace File_Tool
 {
+    
+    #region Action xử lí 
     public interface IActions
     {
-        IArgs IArg { get; set; }
+        IArgs Args { get; set; }
 
-        string Process(string origin);  
+        /// <summary>
+        /// Hàm xử lí chuỗi
+        /// </summary>
+        /// <param name="origin">Chuỗi gốc</param>
+        /// <returns>Kết quả sau khi xử lí</returns>
+        string Process(string origin);
+
+        /// <summary>
+        ///  Mô tả về hành động
+        /// </summary>
+        /// <returns></returns>
+        string Description { get; }
     }
-    public class Replacer : IActions
+    #endregion 
+    /// <summary>
+    /// Class change name with NewCase.
+    /// </summary>
+    public class NewCaser : IActions
     {
-        public IArgs IArg { get; set; }
+        public IArgs Args { get; set; }
+
+        public string Description { get; }
 
         public string Process(string origin)
         {
-            string result = origin;
-            return result.Replace("Needle","Hammer");
+            var args = Args as NewCaseArgs;
+            int type = args.Case;
+            var result = origin;
+            switch (type) {
+                case 1://To Upper Case
+                    result = result.ToUpper();break;
+                case 2://To Lower Case
+                    result = result.ToLower();break;
+                case 3://To First Letter
+                    result = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(result.ToLower());break;
+            }
+            return result;
         }
     }
 }
+

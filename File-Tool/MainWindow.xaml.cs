@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿#region lib
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,13 +18,15 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using File_Tool;
+#endregion
 
 namespace BatchRename
 {
     public partial class MainWindow : Window
     {
         #region Attributes
-        private int newCaseType;
+        List<IActions> actions;
         #region NewCase Status
         public bool IsNewCase
         {
@@ -36,7 +39,6 @@ namespace BatchRename
             DependencyProperty.Register("IsNewCase", typeof(bool),
             typeof(MainWindow), new UIPropertyMetadata(false));
         #endregion
-        private string moveString;
         #region Move Status
         public bool IsMove
         {
@@ -61,8 +63,6 @@ namespace BatchRename
             DependencyProperty.Register("IsFullnameNomalize", typeof(bool),
             typeof(MainWindow), new UIPropertyMetadata(false));
         #endregion
-        private string findString;
-        private string replaceString;
         #region Replace Status
         public bool IsReplace
         {
@@ -88,6 +88,13 @@ namespace BatchRename
             typeof(MainWindow), new UIPropertyMetadata(false));
         #endregion
         #endregion
+
+        #region Expand Function Item
+        ComboBox _comboboxNewCase = null;
+        StackPanel _stackPanelMove = null;
+        List<StackPanel> _stackPanelReplace = new List<StackPanel>();
+        #endregion
+
         public class ObservableHashSetCollection<T> : ObservableCollection<T>
         {
             public Boolean AddUnique(T item)
@@ -98,16 +105,13 @@ namespace BatchRename
                 return true;
             }
         }
+
         /// <summary>
         /// Array file
         /// </summary>
-
         ObservableCollection<File> fileList = new ObservableCollection<File>();
-
-        /// <summary>
-        /// Array Folder
-        /// </summary>
         ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
+
         #region File and Folder Class
         public class File : INotifyPropertyChanged
         {
@@ -123,7 +127,7 @@ namespace BatchRename
                     RaiseChangeEvent();
                 }
             }
-            public string NewName
+            public string NewNameShow
             {
                 get => newName; set
                 {
@@ -148,12 +152,13 @@ namespace BatchRename
                 }
             }
 
+            #region PropertyChange
             public event PropertyChangedEventHandler PropertyChanged;
             void RaiseChangeEvent([CallerMemberName]string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
-
+            #endregion
         }
         public class Folder : INotifyPropertyChanged
         {
@@ -229,117 +234,18 @@ namespace BatchRename
             _comboboxPreset.Items.Add("Default");
             _comboboxPreset.SelectedIndex = 0;
         }
-        /// <summary>
-        /// Help -> Show About
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
         private void ShowAbout(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("Design by Thong", "About");
         }
-        /// <summary>
-        /// Help -> Help
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Help(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("You can do it.", "Help");
         }
         #endregion
 
-        #region Item Navigation
-        private void MenuItem_Tab_Top(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    fileList.Remove((File)FileShow.SelectedItem);
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    folderList.Move(FolderShow.SelectedIndex, 0);
-                }
-            }
-        }
-        private void MenuItem_Tab_Bottom(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    //fileList.Move(FileShow.SelectedIndex, fileList.Count-1);
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    folderList.Move(FolderShow.SelectedIndex, folderList.Count - 1);
-                }
-            }
-        }
-        private void MenuItem_Tab_Down(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    if (FileShow.SelectedIndex < fileList.Count)
-                    {
-                        {
-                            //fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex + 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    if (FolderShow.SelectedIndex < folderList.Count)
-                    {
-                        {
-                            folderList.Move(FolderShow.SelectedIndex, FolderShow.SelectedIndex + 1);
-                        }
-                    }
-                }
-            }
-        }
-        private void MenuItem_Tab_Up(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    if (FileShow.SelectedIndex != 0)
-                    {
-                        {
-                            // fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex - 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    if (FolderShow.SelectedIndex != 0)
-                    {
-                        {
-                            folderList.Move(FolderShow.SelectedIndex, FolderShow.SelectedIndex - 1);
-                        }
-                    }
-                }
-            }
-        }
-        #endregion
-
+        #region Menu Function
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
 
@@ -357,39 +263,69 @@ namespace BatchRename
             fileList.Clear();
             folderList.Clear();
         }
+        #endregion
 
         #region Method
         private void BtnNewCase(object sender, RoutedEventArgs e)
         {
             if (_btnNewCase.IsChecked == true)
             {
+                if (_comboboxNewCase == null)
+                {
+                    _comboboxNewCase = CreateComboBoxNewCase();
+                }
+                if(_comboboxNewCase.SelectedIndex == -1)
+                {
+                    _comboboxNewCase.SelectedIndex = 0;
+                }
                 this._stackPanel_NewCase.Children.Add(_comboboxNewCase);
               
             }
             else
             {
                 _comboboxNewCase.SelectedIndex = -1;
-                this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
+                if(_comboboxNewCase != null)
+                    this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
                 foreach (var element in fileList)
-                    element.NewName = element.FileInfomation.Name;
+                    element.NewNameShow = element.FileInfomation.Name;
             }
         }
+        
+        /// <summary>
+        /// Handle Function 
+        /// </summary>
+        #region Partner Work!!!!
         private void BtnReplace(object sender, RoutedEventArgs e)
         {
             if (_btnReplace.IsChecked == true)
             {
-                this._stackPanel_Replace.Children.Add(_stackPanelReplace);
+                    this._stackPanel_Replace.Children.Add(CreateButtonReplaceSet("+"));
+                    StackPanel stackpanel = CreateStackPanelReplace();
+                    _stackPanelReplace.Add(stackpanel);
+                    InsertBeforeItemStackPanel(this._stackPanel_Replace, stackpanel);
+                
             }
             else
             {
-                this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
+                this._stackPanel_Replace.Children.RemoveAt(this._stackPanel_Replace.Children.Count-1);
+                foreach (var item in _stackPanelReplace)
+                {
+                    this._stackPanel_Replace.Children.Remove(item);
+                }
+                _stackPanelReplace.Clear();
+               
             }
         }
         private void BtnMove(object sender, RoutedEventArgs e)
         {
             if (_btnMove.IsChecked == true)
             {
+                if (_stackPanelMove == null)
+                {
+                    _stackPanelMove = CreateStackPanelMove();
+                }
                 this._stackPanel_Move.Children.Add(_stackPanelMove);
+                
             }
             else
             {
@@ -406,6 +342,9 @@ namespace BatchRename
         }
         #endregion
 
+        #endregion 
+
+        #region Add & Remove Button
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (_tabcontrolShow.SelectedIndex == 0)
@@ -440,6 +379,9 @@ namespace BatchRename
             if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
                 folderList.RemoveAt(FolderShow.SelectedIndex);
         }
+        #endregion
+
+        #region Load File & Folder
         private Boolean LoadFileFromPath(string RootPath)
         {
             DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
@@ -448,7 +390,7 @@ namespace BatchRename
                 FileInfo[] listFileInfo = FolderPath.GetFiles();
                 foreach (var file in listFileInfo)
                 {
-                    fileList.Add(new File() { FileInfomation = file, NewName = file.Name, ErrorStatus = "ChartDonut" });
+                    fileList.Add(new File() { FileInfomation = file, NewNameShow = file.Name, ErrorStatus = "ChartDonut" });
                 }
                 return true;
             }
@@ -468,6 +410,7 @@ namespace BatchRename
             }
             return false;
         }
+        #endregion
 
         #region Preset Method
         private void BtnNewPreset(object sender, RoutedEventArgs e)
@@ -486,23 +429,21 @@ namespace BatchRename
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
+                        
             FileShow.ItemsSource = fileList;
             FolderShow.ItemsSource = folderList;
 
             ComboBox_Load(sender, new RoutedEventArgs());
-            this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
-            this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-            this._stackPanel_Move.Children.Remove(_stackPanelMove);
+            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
         }
 
-        private void _comboboxNewCase_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        public void _comboboxNewCase_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_comboboxNewCase.SelectedIndex == 0)
             {
                 foreach (var file in fileList)
                 {
-                    file.NewName = file.NewName.ToUpper();
+                    file.NewNameShow = file.NewNameShow.ToUpper();
                 }
                 foreach (var folder in folderList)
                 {
@@ -514,7 +455,7 @@ namespace BatchRename
             {
                 foreach (var file in fileList)
                 {
-                    file.NewName = file.NewName.ToLower();
+                    file.NewNameShow = file.NewNameShow.ToLower();
                 }
                 foreach (var folder in folderList)
                 {
@@ -526,7 +467,7 @@ namespace BatchRename
             {
                 foreach (var file in fileList)
                 {
-                    file.NewName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(file.NewName.ToLower());
+                    file.NewNameShow = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(file.NewNameShow.ToLower());
                 }
                 foreach (var folder in folderList)
                 {
@@ -535,5 +476,164 @@ namespace BatchRename
 
             }
         }
+
+        
+        StackPanel CreateStackPanelReplace()
+        {
+            StackPanel stackpanel = new StackPanel();
+            stackpanel.Orientation = Orientation.Vertical;
+            TextBox HammerTextBox = CreateTextBoxReplace("Hammer");
+            TextBox NeedleTextBox = CreateTextBoxReplace("Needle");
+
+            stackpanel.Children.Add(HammerTextBox);
+            stackpanel.Children.Add(NeedleTextBox);
+            stackpanel.Children.Add(CreateButtonReplaceSet("x"));
+            return stackpanel;
+        }
+        Button CreateButtonReplaceSet(string command)
+        {
+            Button button = new Button();
+            button.VerticalContentAlignment = VerticalAlignment.Center;
+            button.Content = command;
+            button.Width = 200;
+            button.Height = 20;
+            button.Style = GetStaticResourceStyle("MaterialDesignFlatAccentButton");
+            button.Background = Brushes.Transparent;
+            if (command == "x")
+            {
+                button.Background = Brushes.Red;
+                button.Foreground = Brushes.Black;
+                button.Click += ButtonReplaceRemoveSet_Click;
+            }
+            else
+            {
+                button.Background = Brushes.White;
+                button.Foreground = Brushes.Red;
+                button.Click += ButtonReplaceAddSet_Click;
+            }
+            return button;
+        }
+
+        private void ButtonReplaceAddSet_Click(object sender, RoutedEventArgs e)
+        {
+            StackPanel stackpanel = CreateStackPanelReplace();
+            _stackPanelReplace.Add(stackpanel);
+            InsertBeforeItemStackPanel(this._stackPanel_Replace,stackpanel);
+        }
+
+        private void ButtonReplaceRemoveSet_Click(object sender, RoutedEventArgs e)
+        {
+            this._stackPanel_Replace.Children.Remove(VisualTreeHelper.GetParent(sender as Control) as UIElement);
+            _stackPanelReplace.Remove(VisualTreeHelper.GetParent(sender as Control) as StackPanel);
+            if (!_stackPanelReplace.Any())
+            {
+                IsReplace = false;
+                this._stackPanel_Replace.Children.RemoveAt(1);
+            }
+
+        }
+        private void InsertBeforeItemStackPanel(StackPanel s,StackPanel c)
+        {
+                s.Children.Insert(s.Children.Count-1, c);
+        }
+        StackPanel CreateStackPanelMove()
+        {
+            StackPanel stackpanel = new StackPanel();
+            stackpanel.Orientation = Orientation.Horizontal;
+            stackpanel.HorizontalAlignment = HorizontalAlignment.Right;
+
+            RadioButton ISBN_Name = new RadioButton();
+            ISBN_Name.Content = "ISBN - Name";
+            ISBN_Name.Margin = Margin(ISBN_Name, 0, 0, 15, 0);
+
+            RadioButton Name_ISBN = new RadioButton();
+            Name_ISBN.Content = "Name - ISBN";
+
+            ISBN_Name.GroupName = "_radioBtnMove";
+            Name_ISBN.GroupName = "_radioBtnMove";
+
+            stackpanel.Children.Add(ISBN_Name);
+            stackpanel.Children.Add(new Separator());
+            stackpanel.Children.Add(Name_ISBN);
+
+            return stackpanel;
+        }
+        TextBox CreateTextBoxReplace(string hint)
+        {
+            TextBox textbox = new TextBox();
+            textbox.HorizontalContentAlignment = HorizontalAlignment.Right;
+            textbox.VerticalContentAlignment = VerticalAlignment.Center;
+            textbox.Height = 35;
+            textbox.Width = 240;
+            textbox.Margin = Margin(textbox, 5, 0);
+            MaterialDesignThemes.Wpf.HintAssist.SetHint(textbox, hint);
+            MaterialDesignThemes.Wpf.HintAssist.SetForeground(textbox, Brushes.BlueViolet);
+            textbox.Style = GetStaticResourceStyle("MaterialDesignFloatingHintTextBox");
+            return textbox;
+        }
+        Style GetStaticResourceStyle(string style)
+        {
+            return this.FindResource(style) as Style;
+        }
+        ComboBox CreateComboBoxNewCase()
+        {
+            ComboBox item = new ComboBox();
+            item.Height = 35;
+            item.Width = 150;
+            item.HorizontalAlignment = HorizontalAlignment.Right;
+            item.Margin = Margin(item, 0, 0, 20, 0);
+            item.HorizontalContentAlignment = HorizontalAlignment.Center;
+            item.VerticalContentAlignment = VerticalAlignment.Center;
+            item.SelectionChanged += _comboboxNewCase_SelectionChanged;
+
+            item.Items.Add(CreateComboBoxItemNewCase("To UpperCase"));
+            item.Items.Add(CreateComboBoxItemNewCase("To LowerCase"));
+            item.Items.Add(CreateComboBoxItemNewCase("To First Upper"));
+
+            return item;
+        }
+        ComboBoxItem CreateComboBoxItemNewCase(string content)
+        {
+            ComboBoxItem result = new ComboBoxItem();
+            result.Content = content;
+            result.HorizontalContentAlignment = HorizontalAlignment.Center;
+            return result;
+        }
+        #region Set Margin
+        /// <summary>
+        /// Set Margin value for item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="left"></param>
+        /// <param name="top"></param>
+        /// <param name="right"></param>
+        /// <param name="bottom"></param>
+        /// <returns>new Thickness</returns>
+        public new Thickness Margin(Control item, int left, int top, int right, int bottom)
+        {
+            Thickness result = item.Margin;
+            result.Left = left;
+            result.Top = top;
+            result.Right = right;
+            result.Bottom = bottom;
+
+            return result;
+        }
+        /// <summary>
+        /// Set Margin value for item
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="left"></param>
+        /// <param name="top"></param>
+        /// <returns>new Thickness</returns>
+        public new Thickness Margin(Control item, int left,int top)
+        {
+            Thickness result = item.Margin;
+            result.Left = left;
+            result.Top = top;
+
+            return result;
+        }
+        #endregion
     }
 }

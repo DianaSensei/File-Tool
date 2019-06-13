@@ -11,20 +11,20 @@ namespace File_Tool
     }
     public class ReplaceArgs : IArgs
     {
-        string Needle;
-        string Hammer;
+        public string Needle { get; set; }
+        public string Hammer { get; set; }
 
     }
     public class RemoveArgs : IArgs {
-        int StartIndex;
-        int Count;
+        public int StartIndex { get; set; }
+        public int Count { get; set; }
     }
 
     public class NewCaseArgs : IArgs {
-        int Case;
+        public int Case { get; set; }
     }
     public class FullnameNormalizeArgs : IArgs {
-
     }
-    public class UniqueNameArgs : IArgs {}
+    public class UniqueNameArgs : IArgs {
+    }
 }
