@@ -210,56 +210,27 @@
                         <TextBlock Padding="5" Text="Remove"/>
                     </StackPanel>
                 </Button>
-                <Separator/>
-                <!--Button Name="_btnTopShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Top" Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_top.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Button Name="_btnUpShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Up"  Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_up.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Button Name="_btnDownShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Down" Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_down.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Button Name="_btnBottomShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Bottom" Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_bottom.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Separator /-->
             </ToolBar>
         </ToolBarTray>
         <DockPanel  VerticalAlignment="Top" HorizontalAlignment="Left">
             <ToolBarTray DockPanel.Dock="Top" Height="35">
                 <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnRefresh" Margin="-5,0,0,0" Click="BtnRefresh" Width="79" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="150" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
                         <StackPanel Orientation="Horizontal" Margin="-10">
-                            <Image Source="Icons/icon_refresh_16.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            <TextBlock Padding="2" Text="Refresh"/>
+                            <Image Source="Icons/icon_play.png" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <Label Content="START" FontSize="20" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </StackPanel>
                     </Button>
                     <Separator />
-                    <Menu Name="_menuHelp" Height="35" Width="70">
-                        <MenuItem  Header="Help" Padding="-1,7,15,10">
-                            <MenuItem.Icon >
-                                <Image Source="Icons/icon_help.png" Width="12" Height="12"/>
+                    <Menu Name="_menuHelp" HorizontalAlignment="Center" HorizontalContentAlignment="Center"  Height="35" Width="70" Background="#f5f5f5">
+                        <MenuItem Width="70">
+                            <MenuItem.Icon>
+                                <Image Margin="15,0,0,0" Source="Icons/icon_help.png" Width="30"/>
                             </MenuItem.Icon>
-                            <MenuItem  Header="About" Click="ShowAbout"/>
                             <MenuItem Header="Help" Click="Help"/>
+                            <MenuItem  Header="About" Click="ShowAbout"/>
                         </MenuItem>
                     </Menu>
-                    <Separator />
-                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="70" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel Orientation="Horizontal" Margin="-10">
-                            <Image Source="Icons/icon_play.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            <TextBlock Text="START" Padding="5"/>
-                        </StackPanel>
-                    </Button>
                     <Separator />
                 </ToolBar>
             </ToolBarTray>
@@ -267,12 +238,6 @@
         <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35">
             <ToolBarTray DockPanel.Dock="Top" Height="35">
                 <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnNewPreset" Width="25" Click="BtnNewPreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton}">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_new.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </Button.Background>
-                    </Button>
-                    <Separator />
                     <Button Name="_btnSavePreset" Width="25" Click="BtnSavePreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
                         <Button.Background>
                             <ImageBrush ImageSource="Icons/icon_save.png" RenderOptions.BitmapScalingMode="HighQuality"/>
@@ -280,7 +245,7 @@
                     </Button>
                     <Separator />
                     <TextBlock Text="Preset:" VerticalAlignment="Center"/>
-                    <ComboBox Name="_comboboxPreset" Width="100"/>
+                    <TextBox Name="_TextBoxPreset" FlowDirection="RightToLeft" Width="125"/>
                     <Button Name="_btnLoadFilePreset" Width="25" Click="BtnLoadPreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
                         <Button.Background>
                             <ImageBrush ImageSource="Icons/icon_openfile.png" RenderOptions.BitmapScalingMode="HighQuality"/>
@@ -290,7 +255,7 @@
                 </ToolBar>
             </ToolBarTray>
         </DockPanel>
-        <ScrollViewer Width="280" Margin="0,80,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+        <ScrollViewer Width="280" Margin="0,70,0,0" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                       CanContentScroll="True">
             <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
                 <Separator />

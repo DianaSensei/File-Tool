@@ -26,7 +26,7 @@ namespace BatchRename
     public partial class MainWindow : Window
     {
         #region Attributes
-        List<IActions> actions;
+        public const string PresetKey = "batchpreset17clc3";
         #region NewCase Status
         public bool IsNewCase
         {
@@ -81,6 +81,9 @@ namespace BatchRename
             get { return (bool)GetValue(IsUniqueNameProperty); }
             set { SetValue(IsUniqueNameProperty, value); }
         }
+
+        public static string PresetKey1 => PresetKey;
+
         // Using a DependencyProperty as the backing store for 
         //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty IsUniqueNameProperty =
@@ -109,11 +112,11 @@ namespace BatchRename
         /// <summary>
         /// Array file
         /// </summary>
-        ObservableCollection<File> fileList = new ObservableCollection<File>();
+        ObservableCollection<m_File> fileList = new ObservableCollection<m_File>();
         ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
-
+        List<IActions> actions = new List<IActions>();
         #region File and Folder Class
-        public class File : INotifyPropertyChanged
+        public class m_File : INotifyPropertyChanged
         {
             private string newName;
             private string error;
@@ -229,11 +232,6 @@ namespace BatchRename
                 mainPanelBorder.Margin = new Thickness();
             }
         }
-        private void ComboBox_Load(object sender, RoutedEventArgs e)
-        {
-            _comboboxPreset.Items.Add("Default");
-            _comboboxPreset.SelectedIndex = 0;
-        }
 
         private void ShowAbout(object sender, RoutedEventArgs e)
         {
@@ -248,8 +246,36 @@ namespace BatchRename
         #region Menu Function
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
+            if (_tabcontrolShow.SelectedIndex == 0)
+            {
+                foreach (var victim in fileList)
+                {
+                    var resultPath = System.IO.Directory.GetParent(victim.FileInfomation.FullName).FullName;
+                    var tempres = System.IO.Path.GetFileNameWithoutExtension(victim.FileInfomation.FullName);
+                    var extension = System.IO.Path.GetExtension(victim.FileInfomation.FullName);
 
+                    int count = 1;
+                    foreach (var action in actions)
+                    {
+                        tempres = action.Process(tempres);
+                    }
+                    var result = tempres;
+                    if ((tempres + extension) != victim.FileInfomation.Name)
+                    {
+                        while (File.Exists(combinePath(resultPath, tempres, extension)))
+                        {
+                            count++;
+                            tempres = result + "(" + count + ")";
+                        }
+                        if (count > 1) result = tempres;
+                    }
+                    File.Move(victim.FileInfomation.FullName, combinePath(resultPath, result, extension));
+                }
+            }
+            else
+            {
 
+            }
 
         }
         /// <summary>
@@ -257,12 +283,6 @@ namespace BatchRename
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void BtnRefresh(object sender, RoutedEventArgs e)
-        {
-            _comboboxPreset.SelectedIndex = 0;
-            fileList.Clear();
-            folderList.Clear();
-        }
         #endregion
 
         #region Method
@@ -274,23 +294,22 @@ namespace BatchRename
                 {
                     _comboboxNewCase = CreateComboBoxNewCase();
                 }
-                if(_comboboxNewCase.SelectedIndex == -1)
+                if (_comboboxNewCase.SelectedIndex == -1)
                 {
                     _comboboxNewCase.SelectedIndex = 0;
                 }
                 this._stackPanel_NewCase.Children.Add(_comboboxNewCase);
-              
             }
             else
             {
                 _comboboxNewCase.SelectedIndex = -1;
-                if(_comboboxNewCase != null)
+                if (_comboboxNewCase != null)
                     this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
                 foreach (var element in fileList)
                     element.NewNameShow = element.FileInfomation.Name;
             }
         }
-        
+
         /// <summary>
         /// Handle Function 
         /// </summary>
@@ -299,21 +318,21 @@ namespace BatchRename
         {
             if (_btnReplace.IsChecked == true)
             {
-                    this._stackPanel_Replace.Children.Add(CreateButtonReplaceSet("+"));
-                    StackPanel stackpanel = CreateStackPanelReplace();
-                    _stackPanelReplace.Add(stackpanel);
-                    InsertBeforeItemStackPanel(this._stackPanel_Replace, stackpanel);
-                
+                this._stackPanel_Replace.Children.Add(CreateButtonReplaceSet("+"));
+                StackPanel stackpanel = CreateStackPanelReplace();
+                _stackPanelReplace.Add(stackpanel);
+                InsertBeforeItemStackPanel(this._stackPanel_Replace, stackpanel);
+
             }
             else
             {
-                this._stackPanel_Replace.Children.RemoveAt(this._stackPanel_Replace.Children.Count-1);
+                this._stackPanel_Replace.Children.RemoveAt(this._stackPanel_Replace.Children.Count - 1);
                 foreach (var item in _stackPanelReplace)
                 {
                     this._stackPanel_Replace.Children.Remove(item);
                 }
                 _stackPanelReplace.Clear();
-               
+
             }
         }
         private void BtnMove(object sender, RoutedEventArgs e)
@@ -325,7 +344,7 @@ namespace BatchRename
                     _stackPanelMove = CreateStackPanelMove();
                 }
                 this._stackPanel_Move.Children.Add(_stackPanelMove);
-                
+
             }
             else
             {
@@ -390,7 +409,7 @@ namespace BatchRename
                 FileInfo[] listFileInfo = FolderPath.GetFiles();
                 foreach (var file in listFileInfo)
                 {
-                    fileList.Add(new File() { FileInfomation = file, NewNameShow = file.Name, ErrorStatus = "ChartDonut" });
+                    fileList.Add(new m_File() { FileInfomation = file, NewNameShow = file.Name, ErrorStatus = "ChartDonut" });
                 }
                 return true;
             }
@@ -419,23 +438,24 @@ namespace BatchRename
         }
         private void BtnSavePreset(object sender, RoutedEventArgs e)
         {
-
+            SaveFileDialog SaveFilePresetDialog = new SaveFileDialog();
+            SaveFilePresetDialog.Title = "Save Preset BatchRename";
+            SaveFilePresetDialog.Filter = "Text file(*.txt)|*.txt";
+            SaveFilePresetDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            SaveFilePresetDialog.DefaultExt = "txt";
+            SaveFilePresetDialog.CheckPathExists = true;
+            if (SaveFilePresetDialog.ShowDialog() == true)
+            {
+                SavePreset(SaveFilePresetDialog.FileName);
+            }
         }
         private void BtnLoadPreset(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog openpresetfile = new OpenFileDialog();
 
         }
         #endregion
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-                        
-            FileShow.ItemsSource = fileList;
-            FolderShow.ItemsSource = folderList;
-
-            ComboBox_Load(sender, new RoutedEventArgs());
-            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-        }
 
         public void _comboboxNewCase_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -477,7 +497,7 @@ namespace BatchRename
             }
         }
 
-        
+        #region Create Element UI
         StackPanel CreateStackPanelReplace()
         {
             StackPanel stackpanel = new StackPanel();
@@ -518,7 +538,7 @@ namespace BatchRename
         {
             StackPanel stackpanel = CreateStackPanelReplace();
             _stackPanelReplace.Add(stackpanel);
-            InsertBeforeItemStackPanel(this._stackPanel_Replace,stackpanel);
+            InsertBeforeItemStackPanel(this._stackPanel_Replace, stackpanel);
         }
 
         private void ButtonReplaceRemoveSet_Click(object sender, RoutedEventArgs e)
@@ -532,9 +552,9 @@ namespace BatchRename
             }
 
         }
-        private void InsertBeforeItemStackPanel(StackPanel s,StackPanel c)
+        private void InsertBeforeItemStackPanel(StackPanel s, StackPanel c)
         {
-                s.Children.Insert(s.Children.Count-1, c);
+            s.Children.Insert(s.Children.Count - 1, c);
         }
         StackPanel CreateStackPanelMove()
         {
@@ -599,6 +619,8 @@ namespace BatchRename
             result.HorizontalContentAlignment = HorizontalAlignment.Center;
             return result;
         }
+        #endregion
+
         #region Set Margin
         /// <summary>
         /// Set Margin value for item
@@ -626,7 +648,7 @@ namespace BatchRename
         /// <param name="left"></param>
         /// <param name="top"></param>
         /// <returns>new Thickness</returns>
-        public new Thickness Margin(Control item, int left,int top)
+        public new Thickness Margin(Control item, int left, int top)
         {
             Thickness result = item.Margin;
             result.Left = left;
@@ -635,5 +657,134 @@ namespace BatchRename
             return result;
         }
         #endregion
+
+        public bool LoadPreset(string path)
+        {
+            List<string> lines = new List<string>();
+            using (var streamReader = new StreamReader(path, Encoding.UTF8))
+            {
+                string line;
+                bool isReadKey = false;
+
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    if (line.ElementAt(0) != '#') continue;
+
+                    if (!isReadKey)
+                    {
+                        if (!CheckValidKeyPreset(line))
+                            return false;
+                        isReadKey = true;
+                        continue;
+                    }
+                    lines.Add(line);
+                }
+            }
+            return ReadPreset(lines);
+        }
+        private bool CheckValidKeyPreset(string reg)
+        {
+            return reg == PresetKey;
+        }
+        public bool ReadPreset(List<string> listactions)
+        {
+            if (!listactions.Any())
+            {
+                return false;
+            }
+            foreach (var action in listactions)
+            {
+                string[] element = action.Split(' ');
+                switch (element[0])
+                {
+                    case "NC":
+                        {
+                            LoadActionNewCase(element);
+                        }
+                        break;
+                    case "FN":
+                        {
+
+                        }
+                        break;
+                    case "M":
+                        {
+
+                        }
+                        break;
+                    case "RP":
+                        {
+
+                        }
+                        break;
+                    case "UN":
+                        {
+
+                        }
+                        break;
+
+                }
+            }
+            return true;
+        }
+        private bool LoadActionNewCase(string[] element)
+        {
+            NewCaser NewCaseAction = new NewCaser() { Args = new NewCaseArgs() { Case = int.Parse(element[1]) } };
+            actions.Add(NewCaseAction);
+            return true;
+        }
+
+        public bool SavePreset(string path)
+        {
+            using (var streamWriter = new StreamWriter(path))
+            {
+                WriteCommentFilePreset(streamWriter);
+                foreach (var action in actions)
+                {
+                    switch (action)
+                    {
+                        case NewCaser n:
+                            {
+                                streamWriter.WriteLine("NC" + " " + (n.Args as NewCaseArgs).Case);
+                            }
+                            break;
+                    }
+                }
+            }
+            return true;
+        }
+        public void WriteCommentFilePreset(StreamWriter sw)
+        {
+            sw.WriteLine("#Preset File of BatchRename.");
+            sw.WriteLine("#Member 1753107 - 1753130 - 1753124.");
+            sw.WriteLine("#Please use '#' at headline to write comment.");
+            sw.WriteLine("#Syntax: \"KeyAction\" + \" \" + \"parameter1\" + \" \" + \"parameter1\" + '...'");
+            sw.WriteLine("#Actions list:");
+            sw.WriteLine("#1.NewCase : Key(NC): ");
+            sw.WriteLine("#parameter1 = 0: ToUpperCase.");
+            sw.WriteLine("#parameter1 = 1: ToLowerCase.");
+            sw.WriteLine("#parameter1 = 2: ToFirstLetterCase.");
+            sw.WriteLine("#2.Replace : Key(RP): ");
+            sw.WriteLine("#parameter1 =  FindWhat");
+            sw.WriteLine("#parameter2 =  ReplaceWith");
+            sw.WriteLine("#3.Move : Key(RP): ");
+            sw.WriteLine("#parameter1 = StartIndex");
+            sw.WriteLine("#parameter2 = Length");
+            sw.WriteLine("#4.Fullname Normalize : Key(FN): ");
+            sw.WriteLine("#no parameter.");
+            sw.WriteLine("#5.Unique Name: Key(UN): ");
+            sw.WriteLine("#no parameter.\n\n");
+        }
+        public static string combinePath(string path, string filename, string extension)
+        {
+            string res = path + "\\" + filename + extension;
+            return res;
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            FileShow.ItemsSource = fileList;
+            FolderShow.ItemsSource = folderList;
+            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
+        }
     }
 }
