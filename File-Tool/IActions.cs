@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,16 +25,15 @@ namespace File_Tool
         /// </summary>
         /// <returns></returns>
         string Description { get; }
+        void ShowUpdateArgDialog();
     }
     #endregion 
     /// <summary>
     /// Class change name with NewCase.
     /// </summary>
-    public class NewCaser : IActions
+    public class NewCaser : IActions , INotifyPropertyChanged
     {
         public IArgs Args { get; set; }
-
-        public string Description { get; }
 
         public string Process(string origin)
         {
@@ -41,15 +41,85 @@ namespace File_Tool
             int type = args.Case;
             var result = origin;
             switch (type) {
-                case 1://To Upper Case
+                case 0://To Upper Case
                     result = result.ToUpper();break;
-                case 2://To Lower Case
+                case 1://To Lower Case
                     result = result.ToLower();break;
-                case 3://To First Letter
+                case 2://To First Letter
                     result = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(result.ToLower());break;
             }
             return result;
         }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaiseChangeEvent(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        }
+        public void ShowUpdateArgDialog()
+        {
+            var screen = new SelectFunctionWindow(Args as NewCaseArgs);
+            if(screen.ShowDialog() == true)
+            {
+                RaiseChangeEvent("Description");
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                var args = Args as NewCaseArgs;
+                var type = args.Case;
+                string types="";
+                if (type == 0) types = "To UpperCase";
+                if (type == 1) types = "To LowerCase";
+                if (type == 2) types = "To LetterCase ";
+                var result = $"NewCase with \"{types}\"";
+                return result;
+            }
+        }
+    }
+    public class Replacer : IActions, INotifyPropertyChanged
+    {
+        public IArgs Args { get; set; }
+
+        public string Process(string origin)
+        {
+            var args = Args as ReplaceArgs;
+            string needle = args.Needle;
+            string hammer = args.Hammer;
+            var result = origin;
+            result = result.Replace(needle, hammer);
+            return result;
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaiseChangeEvent(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        }
+        public void ShowUpdateArgDialog()
+        {
+            var screen = new SelectFunctionWindow(Args as ReplaceArgs);
+            if (screen.ShowDialog() == true)
+            {
+                RaiseChangeEvent("Description");
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                var args = Args as ReplaceArgs;
+                string needle = args.Needle;
+                string hammer = args.Hammer;
+                string result = $"Replace \"{needle}\" by \"{hammer}\"";
+                return result;
+            }
+        }
     }
 }
-
