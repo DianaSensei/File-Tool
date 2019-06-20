@@ -15,6 +15,7 @@
         WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
         Width="Auto" Height="450"
+        OpacityMask="LightGray"
         Title="Batch Rename" x:Name="batchrename" MinHeight="450"  MinWidth="850">
     <Window.Resources>
         <Style x:Key="ScrollBarTrackThumb"
@@ -149,116 +150,167 @@
             </Setter>
         </Style>
     </Window.Resources>
-    <Grid Background="#f5f5f5" HorizontalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="350"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.Resources>
-            <DataTemplate x:Key="ShowErrorTemplate">
-                <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}"  VerticalAlignment="Center"/>
-            </DataTemplate>
-        </Grid.Resources>
-        <StackPanel Grid.Column="0">
-            <StackPanel Background="#f5f5f5" Margin="0,2" HorizontalAlignment="Stretch">
-                <ToolBar Loaded="ToolBar_Loaded" >
-                    <Button Name="_btnSavePreset" Click="BtnSavePreset" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0">
-                        <materialDesign:PackIcon  Kind="ContentSave" Width="24" Height="24"/>
-                    </Button>
-                    <Separator />
-                    <Label Content="Preset: " FontWeight="DemiBold" VerticalAlignment="Center"/>
-                    <Label Name="_LabelPreset" FlowDirection="RightToLeft" Width="135"/>
-                    <Separator/>
-                    <Button Name="_btnLoadFilePreset"  Click="BtnLoadPreset" Style="{StaticResource MaterialDesignFlatButton }">
-                        <materialDesign:PackIcon  Kind="OpenInBrowser" Width="24" Height="24"/>
-                    </Button>
-                </ToolBar>
+    <materialDesign:DialogHost Name="_dialoghost">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel Width="200" Height="200">
+                <Canvas>
+                    <ProgressBar Name="_processbar" Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                                      Value="-1"  Foreground="#e65100" Height="70" Width="70" Canvas.Left="50" Canvas.Top="15"
+                                                     HorizontalAlignment="Center" Margin="16" IsIndeterminate="True" />
+                    <materialDesign:PackIcon Name="_imgCheckProcess" Opacity="0" VerticalAlignment="Center" Kind="Check" Foreground="Green" 
+                                                                 Canvas.Left="70" Canvas.Top="37" Width="60" Height="60"/>
+                    <TextBlock  FontWeight="Bold" Width="180" HorizontalAlignment="Center" Canvas.Left="95" Canvas.Top="130">
+                        <TextBlock.Text>
+                            <MultiBinding StringFormat="{}{0}/{1}">
+                                <Binding Path="CurrentItemCount" />
+                                <Binding Path="TotalItem" />
+                            </MultiBinding>
+                        </TextBlock.Text>
+                    </TextBlock>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Canvas.Left="60" Canvas.Top="160" 
+                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                            HorizontalAlignment="Center">CANCEL</Button>
+                </Canvas>
             </StackPanel>
-            <Separator/>
-            <StackPanel Margin="0,2" Background="#f5f5f5" HorizontalAlignment="Stretch">
-                <ToolBar Loaded="ToolBar_Loaded">
-                    <Button Name="_btnAddFunc" Click="BtnAddFunc" Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialDesign:PackIcon  Kind="BriefcasePlus" Width="24" Height="24"/>
-                    </Button>
-                    
-                    <Separator/>
-                    <Button Name="_btnUpFunc" Click="BtnUpFunc" Style="{StaticResource MaterialDesignFlatButton}" >
-                        <materialDesign:PackIcon  Kind="ArrowUpBoldBox" Width="24" Height="24"/>
-                    </Button>
-                    <Button Name="_btnDownFunc" Click="BtnDownFunc" Style="{StaticResource MaterialDesignFlatButton}" >
-                        <materialDesign:PackIcon  Kind="ArrowDownBoldBox" Width="24" Height="24"/>
-                    </Button>
-                    <Separator/>
-                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="70" Style="{StaticResource MaterialDesignFlatButton}">
-                        <materialDesign:PackIcon VerticalAlignment="Center" Kind="PlayArrow" Width="40" Height="35"/>
-                    </Button>
-                </ToolBar>
-            </StackPanel>
-            <Separator/>
-            <ListView  Name="listView" BorderThickness="3" BorderBrush="Gray">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding Description}"/>
-                                <Button Click="BtnEditFunc" HorizontalAlignment="Right" Margin="8">
-                                    <materialDesign:PackIcon Kind="Edit" Height="13" Width="13"/>
-                                </Button>
-                            <Button Click="BtnRemoveFunc" HorizontalAlignment="Right">
-                                <materialDesign:PackIcon  Kind="BriefcaseMinus" Width="13" Height="13"/>
+        </materialDesign:DialogHost.DialogContent>
+        <Grid Background="#f5f5f5" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <DataTemplate x:Key="ShowErrorTemplate">
+                    <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}"  VerticalAlignment="Center"/>
+                </DataTemplate>
+            </Grid.Resources>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="85"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0">
+                    <StackPanel Background="#f5f5f5" Margin="0,2" HorizontalAlignment="Stretch">
+                        <ToolBar Loaded="ToolBar_Loaded" Style="{DynamicResource MaterialDesignToolBar}"
+                        ClipToBounds="False">
+                            <Button Name="_btnSavePreset" Click="BtnSavePreset" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0">
+                                <materialDesign:PackIcon  Kind="ContentSave" Width="24" Height="24"/>
                             </Button>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </StackPanel>
-        <TabControl Background="#f5f5f5" Grid.Column="1" Name="_tabcontrolShow"  Height="Auto" VerticalAlignment="Top" Width="Auto">
-            <TabItem Header="Rename Files" Height="35">
-                <DataGrid GridLinesVisibility="All"
+                            <Separator />
+                            <Label Content="Preset: " FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Label Name="_LabelPreset" Content="{Binding PresetName}" FontWeight="DemiBold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FlowDirection="RightToLeft" Width="135"/>
+                            <Separator/>
+                            <Button Name="_btnLoadFilePreset"  Click="BtnLoadPreset" Style="{StaticResource MaterialDesignFlatButton }">
+                                <materialDesign:PackIcon  Kind="OpenInBrowser" Width="24" Height="24"/>
+                            </Button>
+                        </ToolBar>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Margin="0,2" Background="#f5f5f5" HorizontalAlignment="Stretch">
+                        <ToolBar Loaded="ToolBar_Loaded" Style="{DynamicResource MaterialDesignToolBar}"
+                        ClipToBounds="False">
+                            <Button Name="_btnAddFunc" Click="BtnAddFunc" Style="{StaticResource MaterialDesignFlatButton}">
+                                <materialDesign:PackIcon  Kind="BriefcasePlus" Width="24" Height="24"/>
+                            </Button>
+                            <Separator/>
+                            <Button Name="_btnUpFunc" Click="BtnUpFunc" Style="{StaticResource MaterialDesignFlatButton}" >
+                                <materialDesign:PackIcon  Kind="ArrowUpBoldBox" Width="24" Height="24"/>
+                            </Button>
+                            <Button Name="_btnDownFunc" Click="BtnDownFunc" Style="{StaticResource MaterialDesignFlatButton}" >
+                                <materialDesign:PackIcon  Kind="ArrowDownBoldBox" Width="24" Height="24"/>
+                            </Button>
+                            <Separator/>
+                            <Button Name="_btnStartBatch" Click="BtnStartBatch"
+                                    Width="70" Style="{StaticResource MaterialDesignFlatButton}">
+                                <materialDesign:PackIcon VerticalAlignment="Center" Kind="PlayArrow" Width="40" Height="35"/>
+                            </Button>
+                        </ToolBar>
+                    </StackPanel>
+                    <Separator/>
+                </StackPanel>
+                <ListView Grid.Column="0" Grid.Row="1" Name="listView" BorderThickness="3" BorderBrush="Gray"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Name="_border" OpacityMask="LightCyan" Width="auto"
+                                Background="White"  
+                                BorderThickness="2" CornerRadius="5">
+                                <Border.Effect>
+                                    <DropShadowEffect  Direction="220" ShadowDepth="3"  Color="LightGray"/>
+                                </Border.Effect>
+                                <Border.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <Trigger Property="Border.IsMouseOver" Value="True">
+                                                <Setter Property="Border.BorderBrush" Value="Gray"/>
+                                                <Setter Property="Border.Opacity" Value="0.7"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="310" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Description}" VerticalAlignment="Center"
+                                           Width="220" TextWrapping="Wrap" FontWeight="DemiBold" Margin="8"/>
+                                    <Button Click="BtnEditFunc" Background="Wheat" Margin="5" Height="25" Width="25" >
+                                        <materialDesign:PackIcon Margin="-13,-10,-10,-10"  Foreground="Gray" Kind="Edit" Height="20" Width="20"/>
+                                    </Button>
+                                    <Button Click="BtnRemoveFunc" Background="IndianRed" Margin="5" Height="25" Width="25">
+                                        <materialDesign:PackIcon Margin="-13,-10,-10,-10" Kind="Close" Width="20" Height="20"/>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+            <TabControl Background="#f5f5f5" Grid.Column="1" Name="_tabcontrolShow"  Height="Auto" VerticalAlignment="Top" Width="Auto">
+                <TabItem Header="Rename Files" Height="35">
+                    <DataGrid GridLinesVisibility="All"
                           SelectionUnit="FullRow"
                           SelectionMode="Extended"
                           CanUserAddRows="False"
                           VerticalGridLinesBrush="LightGray"
                           HorizontalGridLinesBrush="LightGray" 
                           Name="FileShow" AutoGenerateColumns="False">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
-                        <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileInfomation.Name ,Mode=OneWay}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="New FileName" MinWidth="250" Width="SizeToCells" Binding="{Binding NewNameShow}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FileInfomation.FullName,Mode=OneWay}" IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-            <TabItem Header="Rename Folder" Height="35">
-                <DataGrid Name="FolderShow" AutoGenerateColumns="False"
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
+                            <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileInfomation.Name ,Mode=OneWay}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="New FileName" MinWidth="250" Width="SizeToCells" Binding="{Binding NewNameShow}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FileInfomation.FullName,Mode=OneWay}" IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Rename Folder" Height="35">
+                    <DataGrid Name="FolderShow" AutoGenerateColumns="False"
                           CanUserAddRows="False"
                           VerticalGridLinesBrush="LightGray"
                           HorizontalGridLinesBrush="LightGray"
                           GridLinesVisibility="All">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
-                        <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderInfomation.Name ,Mode=OneWay}"  IsReadOnly="True"/>
-                        <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" />
-                        <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FolderInfomation.FullName,Mode=OneWay}" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-        </TabControl>
-        <ToolBarTray Background="#f5f5f5" Grid.Column="1" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="192,2,0,0" >
-            <ToolBar Loaded="ToolBar_Loaded">
-                <StackPanel Orientation="Horizontal">
-                    <Separator/>
-                    <Button Name="_btnAdd" Style="{StaticResource MaterialDesignFlatButton}"
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
+                            <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderInfomation.Name ,Mode=OneWay}"  IsReadOnly="True"/>
+                            <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" />
+                            <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FolderInfomation.FullName,Mode=OneWay}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+            <ToolBarTray Background="#f5f5f5" Grid.Column="1" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="192,2,0,0" >
+                <ToolBar Loaded="ToolBar_Loaded">
+                    <StackPanel Orientation="Horizontal">
+                        <Separator/>
+                        <Button Name="_btnAdd" Style="{StaticResource MaterialDesignFlatButton}"
                         Click="BtnAdd_Click" >
-                        <materialDesign:PackIcon  Kind="FilePlus" Width="24" Height="24"/>
-                    </Button>
-                    <Separator />
-                    <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}"
+                            <materialDesign:PackIcon  Kind="FilePlus" Width="24" Height="24"/>
+                        </Button>
+                        <Separator />
+                        <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}"
                         Click="BtnRemove_Click" >
-                        <materialDesign:PackIcon  Kind="FileRemove" Width="24" Height="24"/>
-                    </Button>
-                </StackPanel>
-            </ToolBar>
-        </ToolBarTray>
-    </Grid>
+                            <materialDesign:PackIcon  Kind="FileRemove" Width="24" Height="24"/>
+                        </Button>
+                    </StackPanel>
+                </ToolBar>
+            </ToolBarTray>
+
+        </Grid>
+    </materialDesign:DialogHost>
 </Window>

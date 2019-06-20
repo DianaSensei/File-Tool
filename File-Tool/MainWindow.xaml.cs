@@ -20,14 +20,18 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using File_Tool;
 using System.Diagnostics;
+using MaterialDesignThemes.Wpf;
 #endregion
 
 namespace BatchRename
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window,INotifyPropertyChanged
     {
         #region Attributes
         public const string PresetKey = "batchpreset17clc3";
+        private int currentItemCount;
+        private int totalitem;
+        private string presetName="Default";
         #endregion
 
         public class ObservableHashSetCollection<T> : ObservableCollection<T>
@@ -44,11 +48,44 @@ namespace BatchRename
         ObservableCollection<m_File> fileList = new ObservableCollection<m_File>();
         ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
         public BindingList<IActions> actions = new BindingList<IActions>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        void RaiseChangeEvent([CallerMemberName]string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+        public int TotalItem {
+            get {
+                if (_tabcontrolShow.SelectedIndex == 1) return folderList.Count;
+                return fileList.Count;
+                }
+            set
+            {
+                totalitem = value;
+                RaiseChangeEvent("TotalItem");
+            }
+        }
+
+        public int CurrentItemCount
+        {
+            get => currentItemCount;
+            set
+            {
+                currentItemCount = value;
+                RaiseChangeEvent("CurrentItemCount");
+            }
+        }
+
+        public string PresetName { get => presetName; set
+            {
+                presetName = value;
+                RaiseChangeEvent("PresetName");
+            }
+        }
         #region File and Folder Class
         public class m_File : INotifyPropertyChanged
         {
             private string newName;
-            private string error;
             private string errorStatus;
             private FileInfo _FileInfomation;
             public FileInfo FileInfomation
@@ -64,14 +101,6 @@ namespace BatchRename
                 get => newName; set
                 {
                     newName = value;
-                    RaiseChangeEvent();
-                }
-            }
-            public string Error
-            {
-                get => error; set
-                {
-                    error = value;
                     RaiseChangeEvent();
                 }
             }
@@ -95,7 +124,6 @@ namespace BatchRename
         public class Folder : INotifyPropertyChanged
         {
             private string newName;
-            private string error;
             private string errorStatus;
             private DirectoryInfo _FolderInfomation;
             public DirectoryInfo FolderInfomation
@@ -114,14 +142,6 @@ namespace BatchRename
                     RaiseChangeEvent();
                 }
             }
-            public string Error
-            {
-                get => error; set
-                {
-                    error = value;
-                    RaiseChangeEvent();
-                }
-            }
             public string ErrorStatus
             {
                 get => errorStatus; set
@@ -131,12 +151,13 @@ namespace BatchRename
                 }
             }
 
+            #region PropertyChange
             public event PropertyChangedEventHandler PropertyChanged;
             void RaiseChangeEvent([CallerMemberName]string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
-
+            #endregion
         }
         #endregion
 
@@ -144,7 +165,7 @@ namespace BatchRename
         {
             InitializeComponent();
             listView.ItemsSource = actions;
-            //this.DataContext = this;
+            this.DataContext = this;
         }
 
         #region PreLoad Resource
@@ -174,6 +195,9 @@ namespace BatchRename
 
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
+            _dialoghost.CloseOnClickAway = false;
+            _imgCheckProcess.Opacity = 0;
+            _dialoghost.IsOpen = true;
             if (_tabcontrolShow.SelectedIndex == 0)
             {
                 foreach (var victim in fileList)
@@ -201,14 +225,19 @@ namespace BatchRename
                     Debug.WriteLine(victim.FileInfomation.FullName);
                     Debug.WriteLine(combinePath(resultPath, result, extension));
                     File.Move(victim.FileInfomation.FullName, combinePath(resultPath, result, extension));
+                    CurrentItemCount++;
                 }
-                fileList.Clear();
+                
             }
             else
             {
 
             }
-
+            _dialoghost.CloseOnClickAway = true;
+            _imgCheckProcess.Opacity = 1;
+            _processbar.Value = 100;
+            fileList.Clear();
+            CurrentItemCount = 0;
         }
       
         #region Add & Remove Button
@@ -263,6 +292,7 @@ namespace BatchRename
                 foreach (var file in listFileInfo)
                 {
                     fileList.Add(new m_File() { FileInfomation = file, NewNameShow = file.Name, ErrorStatus = "ChartDonut" });
+                    TotalItem++;
                 }
                 return true;
             }
@@ -277,6 +307,7 @@ namespace BatchRename
                 foreach (var folder in listFolderInfo)
                 {
                     folderList.Add(new Folder() { FolderInfomation = folder, NewName = folder.Name, ErrorStatus = "ChartDonut" });
+                    TotalItem++;
                 }
                 return true;
             }
@@ -324,7 +355,7 @@ namespace BatchRename
 
                 while ((line = streamReader.ReadLine()) != null)
                 {
-                    if (line.ElementAt(0) != '#') continue;
+                    if (line.ElementAt(0) == '#') continue;
 
                     if (!isReadKey)
                     {
@@ -336,18 +367,16 @@ namespace BatchRename
                     lines.Add(line);
                 }
             }
+            PresetName = System.IO.Path.GetFileNameWithoutExtension(path);
             return ReadPreset(lines);
         }
         private bool CheckValidKeyPreset(string reg)
         {
+            Debug.WriteLine("Check: " + reg + PresetKey);
             return reg == PresetKey;
         }
         public bool ReadPreset(List<string> listactions)
         {
-            if (!listactions.Any())
-            {
-                return false;
-            }
             foreach (var action in listactions)
             {
                 string[] element = action.Split(' ');
@@ -381,6 +410,7 @@ namespace BatchRename
 
                 }
             }
+           
             return true;
         }
         private bool LoadActionNewCase(string[] element)
@@ -395,6 +425,7 @@ namespace BatchRename
             using (var streamWriter = new StreamWriter(path))
             {
                 WriteCommentFilePreset(streamWriter);
+                streamWriter.WriteLine(PresetKey);
                 foreach (var action in actions)
                 {
                     switch (action)
@@ -429,7 +460,7 @@ namespace BatchRename
             sw.WriteLine("#4.Fullname Normalize : Key(FN): ");
             sw.WriteLine("#no parameter.");
             sw.WriteLine("#5.Unique Name: Key(UN): ");
-            sw.WriteLine("#no parameter.\n\n");
+            sw.WriteLine("#no parameter.");
         }
         public static string combinePath(string path, string filename, string extension)
         {
@@ -442,6 +473,7 @@ namespace BatchRename
             FolderShow.ItemsSource = folderList;
             //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
         }
+
         //Còn Lỗi
         private void BtnUpFunc(object sender, RoutedEventArgs e)
         {
@@ -473,10 +505,9 @@ namespace BatchRename
         {
             var item = (sender as Button).DataContext;
             int index = listView.Items.IndexOf(item);
-            var action = listView.Items.GetItemAt(index) as IActions;
-            action.ShowUpdateArgDialog();
+            var action = listView.Items.GetItemAt(index);
+            (action as IActions).ShowUpdateArgDialog();
         }
-
         private void BtnRemoveFunc(object sender, RoutedEventArgs e)
         {
             var item = (sender as Button).DataContext;
