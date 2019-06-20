@@ -59,10 +59,15 @@ namespace File_Tool
         }
         public void ShowUpdateArgDialog()
         {
+            var Case = (Args as NewCaseArgs).Case;
             var screen = new SelectFunctionWindow(Args as NewCaseArgs);
             if(screen.ShowDialog() == true)
             {
                 RaiseChangeEvent("Description");
+            }
+            else
+            {
+                (Args as NewCaseArgs).Case = Case;
             }
         }
 

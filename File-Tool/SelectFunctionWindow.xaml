@@ -7,8 +7,9 @@
         xmlns:local="clr-namespace:File_Tool"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
         Loaded="Window_Loaded"
-        Title="SelectFunctionWindow" Height="350" Width="400">
+        Title="Function" FontWeight="DemiBold" Height="350" Width="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="250"/>
@@ -80,8 +81,8 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="1">
-            <Button Content="Cancel" Grid.Row="1" Width="80" Click="BtnCancelAddFunction_Click" Margin="30,0,30,0"/>
-            <Button Content="Add" Grid.Row="1" Width="80" Click="BtnAddFunction_Click"/>
+            <Button Content="Cancel" Grid.Row="1" Width="80" Click="BtnCancelFunction_Click" Margin="30,0,30,0"/>
+            <Button Name ="_btnFunction" Content="Add" Grid.Row="1" Width="80" Click="BtnFunction_Click"/>
         </StackPanel>
     </Grid>
 </Window>

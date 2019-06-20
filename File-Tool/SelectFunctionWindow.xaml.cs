@@ -18,11 +18,21 @@ namespace File_Tool
 {
     public partial class SelectFunctionWindow : Window, INotifyPropertyChanged
     {
-        /*
-        private string needle;
-        private string hammer;
+        #region Attributes
+        private int cases;
+        private string needle = "";
+        private string hammer = "";
         private int startIndex;
         private int length;
+        public int Case
+        {
+            get => cases;
+            set
+            {
+                cases = value;
+                RaisChangedEvent("Case");
+            }
+        }
         public string Needle
         {
             get => needle;
@@ -59,12 +69,11 @@ namespace File_Tool
                 RaisChangedEvent("Length");
             }
         }
-        */
+        #endregion
+
         public NewCaseArgs newCaseArgs;
         public ReplaceArgs replaceArgs;
-
-        List<Container> containers = new List<Container>();
-
+        private MainWindow mainWindow;
         public event PropertyChangedEventHandler PropertyChanged;
         public void RaisChangedEvent(string name)
         {
@@ -77,10 +86,16 @@ namespace File_Tool
         {
             InitializeComponent();
         }
-        public SelectFunctionWindow(NewCaseArgs args )
+        public SelectFunctionWindow(MainWindow mainWindow)
+        {
+            InitializeComponent();
+            this.mainWindow = mainWindow;
+        }
+        public SelectFunctionWindow(NewCaseArgs args)
         {
             InitializeComponent();
             newCaseArgs = args;
+            ChangesContentShowButtonFunction("OK");
             _comboboxSelect.SelectedIndex = 1;
             _comboboxSelect.IsEnabled = false;
         }
@@ -88,82 +103,26 @@ namespace File_Tool
         {
             InitializeComponent();
             replaceArgs = args;
+            ChangesContentShowButtonFunction("OK");
             _comboboxSelect.SelectedIndex = 0;
             _comboboxSelect.IsEnabled = false;
         }
         private void BtnAddFunction_Click(object sender, RoutedEventArgs e)
         {
-
-
+            if (_comboboxSelect.SelectedIndex == 0)
+            {
+                if (!Needle.Any() || !Hammer.Any()) return;
+                mainWindow.actions.Add(new Replacer() { Args = new ReplaceArgs() { Needle = this.Needle, Hammer = this.Hammer } });
+            }
+        }
+        private void BtnEditFunction_Click(object sender, RoutedEventArgs e)
+        {
             DialogResult = true;
             Close();
         }
-
-        private void BtnCancelAddFunction_Click(object sender, RoutedEventArgs e)
+        private void BtnCancelFunction_Click(object sender, RoutedEventArgs e)
         {
             Close();
-        }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var cb = sender as ComboBox;
-            if (cb.SelectedIndex == 0)
-            {
-                RemoveStackPanel();
-                this._stackpanelParent.Children.Add(_stackpanelParameterReplace);
-                return;
-            }
-            if(cb.SelectedIndex == 1)
-            {
-                RemoveStackPanel();
-                this._stackpanelParent.Children.Add(_stackpanelParameterNewCase);
-                return;
-            }
-            if (cb.SelectedIndex == 2)
-            {
-                RemoveStackPanel();
-                this._stackpanelParent.Children.Add(_stackpanelParameterMove);
-                return;
-            }
-            else RemoveStackPanel();
-
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (newCaseArgs != null)
-                DataContext = newCaseArgs;
-            else if (replaceArgs != null)
-                DataContext = replaceArgs;
-            RemoveStackPanel();
-        }
-        private void RemoveStackPanel()
-        {
-            if(this._stackpanelParent.Children.Contains(_stackpanelParameterReplace))
-                this._stackpanelParent.Children.Remove(_stackpanelParameterReplace);
-            if (this._stackpanelParent.Children.Contains(_stackpanelParameterNewCase))
-                this._stackpanelParent.Children.Remove(_stackpanelParameterNewCase);
-            if (this._stackpanelParent.Children.Contains(_stackpanelParameterMove))
-                this._stackpanelParent.Children.Remove(_stackpanelParameterMove);
-        }
-
-        private StackPanel CreateStackPanel(MaterialDesignThemes.Wpf.PackIconKind kind, string content)
-        {
-            StackPanel stackPanel = new StackPanel();
-            stackPanel.Orientation = Orientation.Horizontal;
-
-            MaterialDesignThemes.Wpf.PackIcon icon = new MaterialDesignThemes.Wpf.PackIcon();
-            icon.Kind = kind;
-            icon.Height = 24;icon.Width = 24; icon.VerticalAlignment = VerticalAlignment.Center;
-
-            Label label = new Label();
-            label.Content = content;
-            label.FontWeight = FontWeights.DemiBold;
-            label.FontSize = 15; label.Height = 35; label.VerticalAlignment = VerticalAlignment.Center;
-
-            stackPanel.Children.Add(icon);
-            stackPanel.Children.Add(label);
-            return stackPanel;
         }
 
         private void _comboboxSelect_Loaded(object sender, RoutedEventArgs e)
@@ -188,6 +147,63 @@ namespace File_Tool
                 return;
             }
             else RemoveStackPanel();
+        }
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var cb = sender as ComboBox;
+            if (cb.SelectedIndex == 0)
+            {
+                RemoveStackPanel();
+                this._stackpanelParent.Children.Add(_stackpanelParameterReplace);
+                return;
+            }
+            if (cb.SelectedIndex == 1)
+            {
+                RemoveStackPanel();
+                this._stackpanelParent.Children.Add(_stackpanelParameterNewCase);
+                return;
+            }
+            if (cb.SelectedIndex == 2)
+            {
+                RemoveStackPanel();
+                this._stackpanelParent.Children.Add(_stackpanelParameterMove);
+                return;
+            }
+            else RemoveStackPanel();
+
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (mainWindow != null)
+                DataContext = this;
+            else if (newCaseArgs != null)
+                DataContext = newCaseArgs;
+            else if (replaceArgs != null)
+                DataContext = replaceArgs;
+            RemoveStackPanel();
+        }
+        private void RemoveStackPanel()
+        {
+            if (this._stackpanelParent.Children.Contains(_stackpanelParameterReplace))
+                this._stackpanelParent.Children.Remove(_stackpanelParameterReplace);
+            if (this._stackpanelParent.Children.Contains(_stackpanelParameterNewCase))
+                this._stackpanelParent.Children.Remove(_stackpanelParameterNewCase);
+            if (this._stackpanelParent.Children.Contains(_stackpanelParameterMove))
+                this._stackpanelParent.Children.Remove(_stackpanelParameterMove);
+        }
+        private void BtnFunction_Click(object sender, RoutedEventArgs e)
+        {
+            if ((_btnFunction.Content as string) == "Add")
+            {
+                BtnAddFunction_Click(sender, e);
+            }
+            else BtnEditFunction_Click(sender, e);
+
+        }
+        public void ChangesContentShowButtonFunction(string str)
+        {
+            _btnFunction.Content = str;
         }
     }
 }

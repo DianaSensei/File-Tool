@@ -43,7 +43,7 @@ namespace BatchRename
 
         ObservableCollection<m_File> fileList = new ObservableCollection<m_File>();
         ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
-        BindingList<IActions> actions = new BindingList<IActions>();
+        public BindingList<IActions> actions = new BindingList<IActions>();
         #region File and Folder Class
         public class m_File : INotifyPropertyChanged
         {
@@ -202,6 +202,7 @@ namespace BatchRename
                     Debug.WriteLine(combinePath(resultPath, result, extension));
                     File.Move(victim.FileInfomation.FullName, combinePath(resultPath, result, extension));
                 }
+                fileList.Clear();
             }
             else
             {
@@ -213,9 +214,8 @@ namespace BatchRename
         #region Add & Remove Button
         private void BtnAddFunc(object sender, RoutedEventArgs e)
         {
-            SelectFunctionWindow selectfunctionwd = new SelectFunctionWindow();
+            SelectFunctionWindow selectfunctionwd = new SelectFunctionWindow(this);
             selectfunctionwd.Show();
-
         }
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
