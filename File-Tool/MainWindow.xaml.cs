@@ -21,17 +21,24 @@ using System.Runtime.CompilerServices;
 using File_Tool;
 using System.Diagnostics;
 using MaterialDesignThemes.Wpf;
+using System.Windows.Controls.Primitives;
 #endregion
 
 namespace BatchRename
 {
-    public partial class MainWindow : Window,INotifyPropertyChanged
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region Attributes
         public const string PresetKey = "batchpreset17clc3";
         private int currentItemCount;
         private int totalitem;
-        private string presetName="Default";
+        private string presetName = "Default";
+        //  Color mode
+        private string foregroundColor = "Black";
+        private string backgroundColor = "#f5f5f5";
+        private string backgroundfuncColor = "White";
+        private string shadowColor = "LightGray";
+        private string backgroundtabitemColor = "#f5f5f5";
         #endregion
 
         public class ObservableHashSetCollection<T> : ObservableCollection<T>
@@ -54,11 +61,13 @@ namespace BatchRename
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        public int TotalItem {
-            get {
+        public int TotalItem
+        {
+            get
+            {
                 if (_tabcontrolShow.SelectedIndex == 1) return folderList.Count;
                 return fileList.Count;
-                }
+            }
             set
             {
                 totalitem = value;
@@ -76,12 +85,60 @@ namespace BatchRename
             }
         }
 
-        public string PresetName { get => presetName; set
+        public string PresetName
+        {
+            get => presetName; set
             {
                 presetName = value;
                 RaiseChangeEvent("PresetName");
             }
         }
+        public string ForegroundColor
+        {
+            get => foregroundColor;
+            set
+            {
+                foregroundColor = value;
+                RaiseChangeEvent("ForegroundColor");
+            }
+        }
+        public string BackgroundColor
+        {
+            get => backgroundColor;
+            set
+            {
+                backgroundColor = value;
+                RaiseChangeEvent("BackgroundColor");
+            }
+        }
+        public string BackgroundfuncColor
+        {
+            get => backgroundfuncColor;
+            set
+            {
+                backgroundfuncColor = value;
+                RaiseChangeEvent("BackgroundfuncColor");
+            }
+        }
+        public string ShadowColor
+        {
+            get => shadowColor;
+            set
+            {
+                shadowColor = value;
+                RaiseChangeEvent("ShadowColor");
+            }
+        }
+        public string BackgroundtabitemColor
+        {
+            get => backgroundtabitemColor;
+            set
+            {
+                backgroundtabitemColor = value;
+                RaiseChangeEvent("BackgroundtabitemColor");
+            }
+        }
+
         #region File and Folder Class
         public class m_File : INotifyPropertyChanged
         {
@@ -227,7 +284,7 @@ namespace BatchRename
                     File.Move(victim.FileInfomation.FullName, combinePath(resultPath, result, extension));
                     CurrentItemCount++;
                 }
-                
+
             }
             else
             {
@@ -239,7 +296,7 @@ namespace BatchRename
             fileList.Clear();
             CurrentItemCount = 0;
         }
-      
+
         #region Add & Remove Button
         private void BtnAddFunc(object sender, RoutedEventArgs e)
         {
@@ -334,7 +391,7 @@ namespace BatchRename
             OpenFileDialog openpresetfile = new OpenFileDialog();
             openpresetfile.Title = "Open Preset BatchRename";
             openpresetfile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            if(openpresetfile.ShowDialog() == true)
+            if (openpresetfile.ShowDialog() == true)
             {
                 if (!LoadPreset(openpresetfile.FileName))
                 {
@@ -410,7 +467,7 @@ namespace BatchRename
 
                 }
             }
-           
+
             return true;
         }
         private bool LoadActionNewCase(string[] element)
@@ -493,10 +550,10 @@ namespace BatchRename
         private void BtnDownFunc(object sender, RoutedEventArgs e)
         {
             int index = listView.SelectedIndex;
-            if(index < actions.Count - 1)
+            if (index < actions.Count - 1)
             {
                 IActions temp = actions[index];
-                actions[index] = actions[index+1];
+                actions[index] = actions[index + 1];
                 actions[index + 1] = temp;
             }
         }
@@ -506,13 +563,34 @@ namespace BatchRename
             var item = (sender as Button).DataContext;
             int index = listView.Items.IndexOf(item);
             var action = listView.Items.GetItemAt(index);
-            (action as IActions).ShowUpdateArgDialog();
+            (action as IActions).ShowUpdateArgDialog(this);
         }
         private void BtnRemoveFunc(object sender, RoutedEventArgs e)
         {
             var item = (sender as Button).DataContext;
             int index = listView.Items.IndexOf(item);
             actions.RemoveAt(index);
+        }
+
+        private void BtnColorMode_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButton button = sender as ToggleButton;
+            if (button.IsChecked == false)
+            {
+                ForegroundColor = "Black";
+                BackgroundColor = "#f5f5f5";
+                BackgroundfuncColor = "White";
+                ShadowColor = "LightGray";
+                BackgroundtabitemColor = "#f5f5f5";
+            }
+            else
+            {
+                ForegroundColor = "White";
+                BackgroundColor = "#20242a";
+                BackgroundfuncColor = "#323741";
+                ShadowColor = "LightGray";
+                BackgroundtabitemColor = "#424751";
+            }
         }
     }
 }

@@ -24,18 +24,41 @@ namespace File_Tool
         public bool Mode = true;
 
         #region Attributes
+        private string foregroundColor = "Black";
+        private string backgroundColor = "#f5f5f5";
+
         private int cases;
         private string needle = "";
         private string hammer = "";
         private int startIndex;
         private int length;
+
+        public string ForegroundColor
+        {
+            get => foregroundColor;
+            set
+            {
+                foregroundColor = value;
+                RaiseChangedEvent("ForegroundColor");
+            }
+        }
+        public string BackgroundColor
+        {
+            get => backgroundColor;
+            set
+            {
+                backgroundColor = value;
+                RaiseChangedEvent("BackgroundColor");
+            }
+        }
+
         public int Case
         {
             get => cases;
             set
             {
                 cases = value;
-                RaisChangedEvent("Case");
+                RaiseChangedEvent("Case");
             }
         }
         public string Needle
@@ -44,7 +67,7 @@ namespace File_Tool
             set
             {
                 needle = value;
-                RaisChangedEvent("Needle");
+                RaiseChangedEvent("Needle");
             }
         }
         public string Hammer
@@ -53,7 +76,7 @@ namespace File_Tool
             set
             {
                 hammer = value;
-                RaisChangedEvent("Hammer");
+                RaiseChangedEvent("Hammer");
             }
         }
         public int StartIndex
@@ -62,7 +85,7 @@ namespace File_Tool
             set
             {
                 startIndex = value;
-                RaisChangedEvent("StartIndex");
+                RaiseChangedEvent("StartIndex");
             }
         }
         public int Length
@@ -71,7 +94,7 @@ namespace File_Tool
             set
             {
                 length = value;
-                RaisChangedEvent("Length");
+                RaiseChangedEvent("Length");
             }
         }
         #endregion
@@ -79,11 +102,11 @@ namespace File_Tool
         #region Args DataContext
         public NewCaseArgs newCaseArgs;
         public ReplaceArgs replaceArgs;
-        private MainWindow mainWindow;
+        public MainWindow mainWindow;
         #endregion
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void RaisChangedEvent(string name)
+        public void RaiseChangedEvent(string name)
         {
             if (PropertyChanged != null)
             {
@@ -107,19 +130,21 @@ namespace File_Tool
             InitializeComponent();
             this.mainWindow = mainWindow;
         }
-        public SelectFunctionWindow(NewCaseArgs args)
+        public SelectFunctionWindow(NewCaseArgs args,MainWindow mainWindow)
         {
             InitializeComponent();
             newCaseArgs = args;
+            this.mainWindow = mainWindow;
             ChangesContentShowButtonFunction("OK");
             Mode = false;
             _comboboxSelect.SelectedIndex = 1;
             _comboboxSelect.IsEnabled = false;
         }
-        public SelectFunctionWindow(ReplaceArgs args)
+        public SelectFunctionWindow(ReplaceArgs args,MainWindow mainWindow)
         {
             InitializeComponent();
             replaceArgs = args;
+            this.mainWindow = mainWindow;
             ChangesContentShowButtonFunction("OK");
             Mode = false;
             _comboboxSelect.SelectedIndex = 0;
@@ -195,13 +220,20 @@ namespace File_Tool
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (mainWindow != null)
-                DataContext = this;
-            else if (newCaseArgs != null)
+            
+            if (newCaseArgs != null)
                 DataContext = newCaseArgs;
             else if (replaceArgs != null)
                 DataContext = replaceArgs;
+            else if (mainWindow != null)
+                DataContext = this;
+            LoadColor();
             RemoveStackPanel();
+        }
+        private void LoadColor()
+        {
+            ForegroundColor = mainWindow.ForegroundColor;
+            BackgroundColor = mainWindow.BackgroundColor;
         }
         private void RemoveStackPanel()
         {

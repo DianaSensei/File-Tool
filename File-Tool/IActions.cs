@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BatchRename;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace File_Tool
         /// </summary>
         /// <returns></returns>
         string Description { get; }
-        void ShowUpdateArgDialog();
+        void ShowUpdateArgDialog(MainWindow mainWindow);
     }
     #endregion 
     /// <summary>
@@ -57,10 +58,10 @@ namespace File_Tool
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         }
-        public void ShowUpdateArgDialog()
+        public void ShowUpdateArgDialog(MainWindow mainWindow)
         {
             var Case = (Args as NewCaseArgs).Case;
-            var screen = new SelectFunctionWindow(Args as NewCaseArgs);
+            var screen = new SelectFunctionWindow(Args as NewCaseArgs,mainWindow);
             if(screen.ShowDialog() == true)
             {
                 RaiseChangeEvent("Description");
@@ -106,9 +107,9 @@ namespace File_Tool
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         }
-        public void ShowUpdateArgDialog()
+        public void ShowUpdateArgDialog(MainWindow mainWindow )
         {
-            var screen = new SelectFunctionWindow(Args as ReplaceArgs);
+            var screen = new SelectFunctionWindow(Args as ReplaceArgs,mainWindow);
             if (screen.ShowDialog() == true)
             {
                 RaiseChangeEvent("Description");
