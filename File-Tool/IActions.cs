@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace File_Tool
@@ -124,6 +125,87 @@ namespace File_Tool
                 string needle = args.Needle;
                 string hammer = args.Hammer;
                 string result = $"Replace \"{needle}\" by \"{hammer}\"";
+                return result;
+            }
+        }
+    }
+
+    public class ISBN : IActions, INotifyPropertyChanged
+    {
+        public IArgs Args { get; set; }
+
+        public string Process(string origin)
+        {
+            var args = Args as MoveArgs;
+            int type = args.Modes;
+            var result = origin;
+            string isbn = "", filename = "";
+            Match match;
+            string regex_I_F = @"(?<isbn>[0-9_-]{1,})[ ](?<filename>[a-zA-Z ,]{1,})";
+            string regex_F_I = @"(?<filename>[a-zA-Z ,]{1,})[ ](?<isbn>[0-9_-]{1,})";
+
+            switch (type)
+            {
+                case 0://IBSN - Filename                   
+                    match = Regex.Match(result, regex_I_F);
+                    isbn = match.Groups["isbn"].Value;
+                    filename = match.Groups["filename"].Value;
+                    if (isbn == "" && filename == "")
+                    {
+                        match = Regex.Match(result, regex_F_I);
+                        isbn = match.Groups["isbn"].Value;
+                        filename = match.Groups["filename"].Value;
+                        result = isbn + " " + filename; break;
+                    }
+                    result = isbn + " " + filename; break;
+                case 1://Filename - ISBN
+                    match = Regex.Match(result, regex_F_I);
+                    isbn = match.Groups["isbn"].Value;
+                    filename = match.Groups["filename"].Value;
+                    if (isbn == "" && filename == "")
+                    {
+                        match = Regex.Match(result, regex_I_F);
+                        isbn = match.Groups["isbn"].Value;
+                        filename = match.Groups["filename"].Value;
+                        result = filename + " " + isbn; break;
+                    }
+                    result = filename + " " + isbn; break;
+            }
+            return result;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaiseChangeEvent(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        }
+
+        public void ShowUpdateArgDialog(MainWindow mainWindow)
+        {
+            var Mode = (Args as MoveArgs).Modes;
+            var screen = new SelectFunctionWindow(Args as MoveArgs);
+            if (screen.ShowDialog() == true)
+            {
+                RaiseChangeEvent("Description");
+            }
+            else
+            {
+                (Args as MoveArgs).Modes = Mode;
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                var args = Args as MoveArgs;
+                var mode = args.Modes;
+                string types = "";
+                if (mode == 0) types = "IBSN - Filename";
+                if (mode == 1) types = "Filename - IBSN";
+                var result = $"\"{types}\"";
                 return result;
             }
         }

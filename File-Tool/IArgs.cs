@@ -15,9 +15,9 @@ namespace File_Tool
         public string Hammer { get; set; }
 
     }
-    public class RemoveArgs : IArgs {
-        public int StartIndex { get; set; }
-        public int Count { get; set; }
+    public class MoveArgs : IArgs
+    {
+        public int Modes { get; set; }
     }
 
     public class NewCaseArgs : IArgs {

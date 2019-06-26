@@ -30,8 +30,7 @@ namespace File_Tool
         private int cases;
         private string needle = "";
         private string hammer = "";
-        private int startIndex;
-        private int length;
+        private int modes = -1;
 
         public string ForegroundColor
         {
@@ -79,22 +78,13 @@ namespace File_Tool
                 RaiseChangedEvent("Hammer");
             }
         }
-        public int StartIndex
+        public int Modes
         {
-            get => startIndex;
+            get => modes;
             set
             {
-                startIndex = value;
-                RaiseChangedEvent("StartIndex");
-            }
-        }
-        public int Length
-        {
-            get => length;
-            set
-            {
-                length = value;
-                RaiseChangedEvent("Length");
+                modes = value;
+                RaiseChangedEvent("Modes");
             }
         }
         #endregion
@@ -102,6 +92,7 @@ namespace File_Tool
         #region Args DataContext
         public NewCaseArgs newCaseArgs;
         public ReplaceArgs replaceArgs;
+        public MoveArgs moveArgs;
         public MainWindow mainWindow;
         #endregion
 
@@ -121,7 +112,7 @@ namespace File_Tool
         ///                        4 = Unique Name 
         /// </summary>
         #region Constructor With Parameter
-        public SelectFunctionWindow()
+        public SelectFunctionWindow(MoveArgs moveArgs)
         {
             InitializeComponent();
         }
@@ -158,6 +149,11 @@ namespace File_Tool
             {
                 if (!Needle.Any() || !Hammer.Any()) return;
                 mainWindow.actions.Add(new Replacer() { Args = new ReplaceArgs() { Needle = this.Needle, Hammer = this.Hammer } });
+            }
+            else if (_comboboxSelect.SelectedIndex == 2)
+            {
+                if (modes == -1) return;
+                mainWindow.actions.Add(new ISBN() { Args = new MoveArgs() { Modes = this.Modes } });
             }
         }
         private void BtnEditFunction_Click(object sender, RoutedEventArgs e)
@@ -227,6 +223,8 @@ namespace File_Tool
                 DataContext = replaceArgs;
             else if (mainWindow != null)
                 DataContext = this;
+            else if (moveArgs != null)
+                DataContext = moveArgs;
             LoadColor();
             RemoveStackPanel();
         }

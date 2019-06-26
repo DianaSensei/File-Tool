@@ -88,8 +88,20 @@
                 </ComboBox>
             </StackPanel>
             <StackPanel Name="_stackpanelParameterMove">
-                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding StartIndex}" materialDesign:HintAssist.Hint="Start Index" HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
-                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding Length}" materialDesign:HintAssist.Hint="Length" HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
+                <ComboBox Margin="50,15,50,0" Height="35" SelectedIndex="{Binding Modes}" 
+                          materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                          materialDesign:HintAssist.Hint="Type">
+                    <ComboBoxItem  Height="35">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="IBSN - Filename" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                    <ComboBoxItem  Height="35">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Filename - IBSN" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                </ComboBox>
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="1">

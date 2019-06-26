@@ -28,3 +28,33 @@ C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\Fi
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\File-Tool.csprojAssemblyReference.cache
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\SelectFunctionWindow.g.cs
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\SelectFunctionWindow.baml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\File-Tool.exe.config
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\File-Tool.exe
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\File-Tool.pdb
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\MaterialDesignColors.dll
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\MaterialDesignThemes.Wpf.dll
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\Serilog.dll
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\Serilog.Sinks.File.dll
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\MaterialDesignColors.pdb
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\MaterialDesignThemes.Wpf.pdb
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\MaterialDesignThemes.Wpf.xml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\Serilog.pdb
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\Serilog.xml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\Serilog.Sinks.File.pdb
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\Serilog.Sinks.File.xml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.csprojAssemblyReference.cache
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\MainWindow.g.cs
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\SelectFunctionWindow.g.cs
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\App.g.cs
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool_MarkupCompile.cache
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool_MarkupCompile.lref
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\App.baml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\MainWindow.baml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\SelectFunctionWindow.baml
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.g.resources
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File_Tool.Properties.Resources.resources
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.csproj.GenerateResource.cache
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.csproj.CoreCompileInputs.cache
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.csproj.CopyComplete
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.exe
+C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\obj\Debug\File-Tool.pdb
