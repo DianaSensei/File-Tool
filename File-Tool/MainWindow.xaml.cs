@@ -52,10 +52,13 @@ namespace BatchRename
             }
         }
 
+        #region List manager
         ObservableCollection<m_File> fileList = new ObservableCollection<m_File>();
         ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
         public BindingList<IActions> actions = new BindingList<IActions>();
+        #endregion
 
+        #region PropertyChanged value
         public event PropertyChangedEventHandler PropertyChanged;
         void RaiseChangeEvent([CallerMemberName]string propertyName = "")
         {
@@ -138,22 +141,32 @@ namespace BatchRename
                 RaiseChangeEvent("BackgroundtabitemColor");
             }
         }
+        #endregion
 
         #region File and Folder Class
         public class m_File : INotifyPropertyChanged
         {
             private string newName;
             private string errorStatus;
-            private FileInfo _FileInfomation;
-            public FileInfo FileInfomation
+            private string filename;
+            private string fullpath;
+            public string FileName
             {
-                get => _FileInfomation; set
+                get => filename; set
                 {
-                    _FileInfomation = value;
+                    filename = value;
                     RaiseChangeEvent();
                 }
             }
-            public string NewNameShow
+            public string FullPath
+            {
+                get => fullpath; set
+                {
+                    fullpath = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string NewName
             {
                 get => newName; set
                 {
@@ -182,12 +195,21 @@ namespace BatchRename
         {
             private string newName;
             private string errorStatus;
-            private DirectoryInfo _FolderInfomation;
-            public DirectoryInfo FolderInfomation
+            private string foldername;
+            private string fullpath;
+            public string FolderName
             {
-                get => _FolderInfomation; set
+                get => foldername; set
                 {
-                    _FolderInfomation = value;
+                    foldername = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string FullPath
+            {
+                get => fullpath; set
+                {
+                    fullpath = value;
                     RaiseChangeEvent();
                 }
             }
@@ -252,48 +274,61 @@ namespace BatchRename
 
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
-            _dialoghost.CloseOnClickAway = false;
-            _imgCheckProcess.Opacity = 0;
-            _dialoghost.IsOpen = true;
             if (_tabcontrolShow.SelectedIndex == 0)
             {
+                if (fileList.Any())
+                {
+                    _dialoghost.CloseOnClickAway = false;
+                    _imgCheckProcess.Opacity = 0;
+                    _dialoghost.IsOpen = true;
+                }
                 foreach (var victim in fileList)
                 {
-                    var resultPath = System.IO.Directory.GetParent(victim.FileInfomation.FullName).FullName;
-                    var tempres = System.IO.Path.GetFileNameWithoutExtension(victim.FileInfomation.FullName);
-                    var extension = System.IO.Path.GetExtension(victim.FileInfomation.FullName);
-
-                    int count = 1;
+                    var filename = victim.FullPath;
                     foreach (var action in actions)
                     {
-                        tempres = action.Process(tempres);
+                        filename = action.Process(filename);
                     }
-                    var result = tempres;
-                    Debug.WriteLine(combinePath(resultPath, tempres, extension));
-                    if ((tempres + extension) != victim.FileInfomation.Name)
-                    {
-                        while (File.Exists(combinePath(resultPath, tempres, extension)))
-                        {
-                            count++;
-                            tempres = result + "(" + count + ")";
-                        }
-                        if (count > 1) result = tempres;
-                    }
-                    Debug.WriteLine(victim.FileInfomation.FullName);
-                    Debug.WriteLine(combinePath(resultPath, result, extension));
-                    File.Move(victim.FileInfomation.FullName, combinePath(resultPath, result, extension));
-                    CurrentItemCount++;
-                }
+                    var result = filename;
+                    Debug.WriteLine(result);
 
+                    var path = PathHandler.getPath(result);
+                    var tempres = PathHandler.getFileName(result);
+                    var extension = PathHandler.getExtension(result);
+                    int count = 1;
+                    if (actions.Any())
+                    {
+                        // Handle exit file with regex
+                        if ((tempres + extension) != victim.FileName)
+                        {
+                            while (File.Exists(combinePath(path, tempres, extension)))
+                            {
+                                count++;
+                                tempres = result + "(" + count + ")";
+                            }
+                            if (count > 1) result = tempres;
+                        }
+                        Debug.WriteLine(victim.FullPath);
+                        Debug.WriteLine(combinePath(path, result, extension));
+                        File.Move(victim.FullPath, combinePath(path, result, extension));
+                        CurrentItemCount++;
+                    }
+                }
+                _dialoghost.CloseOnClickAway = true;
+                _imgCheckProcess.Opacity = 1;
+                _processbar.Value = 100;
+                fileList.Clear();
             }
             else
             {
-
+                if (folderList.Any())
+                {
+                    _dialoghost.CloseOnClickAway = false;
+                    _imgCheckProcess.Opacity = 0;
+                    _dialoghost.IsOpen = true;
+                }
             }
-            _dialoghost.CloseOnClickAway = true;
-            _imgCheckProcess.Opacity = 1;
-            _processbar.Value = 100;
-            fileList.Clear();
+            
             CurrentItemCount = 0;
         }
 
@@ -348,7 +383,8 @@ namespace BatchRename
                 FileInfo[] listFileInfo = FolderPath.GetFiles();
                 foreach (var file in listFileInfo)
                 {
-                    fileList.Add(new m_File() { FileInfomation = file, NewNameShow = file.Name, ErrorStatus = "ChartDonut" });
+                    fileList.Add(new m_File() {  FileName = file.Name, FullPath =file.FullName, NewName = file.Name, ErrorStatus = "ChartDonut" });
+                    UpdateNewName("file");
                     TotalItem++;
                 }
                 return true;
@@ -363,7 +399,8 @@ namespace BatchRename
                 DirectoryInfo[] listFolderInfo = FolderPath.GetDirectories();
                 foreach (var folder in listFolderInfo)
                 {
-                    folderList.Add(new Folder() { FolderInfomation = folder, NewName = folder.Name, ErrorStatus = "ChartDonut" });
+                    folderList.Add(new Folder() { FolderName = folder.Name, FullPath = folder.FullName, NewName = folder.Name, ErrorStatus = "ChartDonut" });
+                    UpdateNewName("folder");
                     TotalItem++;
                 }
                 return true;
@@ -371,6 +408,18 @@ namespace BatchRename
             return false;
         }
         #endregion
+
+        private void UpdateNewName(string Mode)
+        {
+            if(Mode == "file")
+            {
+
+            }
+            else
+            {
+
+            }
+        }
 
         #region Preset Method
         private void BtnSavePreset(object sender, RoutedEventArgs e)
@@ -401,7 +450,7 @@ namespace BatchRename
 
         }
         #endregion
-
+        #region Preset region
         public bool LoadPreset(string path)
         {
             List<string> lines = new List<string>();
@@ -519,6 +568,8 @@ namespace BatchRename
             sw.WriteLine("#5.Unique Name: Key(UN): ");
             sw.WriteLine("#no parameter.");
         }
+        #endregion
+
         public static string combinePath(string path, string filename, string extension)
         {
             string res = path + "\\" + filename + extension;
@@ -531,6 +582,7 @@ namespace BatchRename
             //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
         }
 
+        #region Function navigate
         //Còn Lỗi
         private void BtnUpFunc(object sender, RoutedEventArgs e)
         {
@@ -571,6 +623,7 @@ namespace BatchRename
             int index = listView.Items.IndexOf(item);
             actions.RemoveAt(index);
         }
+        #endregion
 
         private void BtnColorMode_Click(object sender, RoutedEventArgs e)
         {

@@ -51,6 +51,12 @@
                         <Label Content="Unique Name" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
                 </ComboBoxItem>
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Extension" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="Change Extension" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem>
             </ComboBox>
             <StackPanel Name="_stackpanelParameterReplace">
                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding Needle}" 
@@ -90,91 +96,30 @@
             <StackPanel Name="_stackpanelParameterMove">
                 <ComboBox Margin="50,15,50,0" Height="35" SelectedIndex="{Binding Modes}" 
                           materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                          Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
                           materialDesign:HintAssist.Hint="Type">
-                    <ComboBoxItem  Height="35">
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="IBSN - Filename" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                            <Label Content="IBSN - Filename" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ComboBoxItem>
-                    <ComboBoxItem  Height="35">
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="Filename - IBSN" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                            <Label Content="Filename - IBSN" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ComboBoxItem>
                 </ComboBox>
+            </StackPanel>
+            <StackPanel Name="_stackpanelParameterExtension">
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding newExt}" 
+                         Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                         materialDesign:HintAssist.Hint="Change Extention to"
+                         HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
             </StackPanel>
         </StackPanel>
         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="1">
             <Button Content="Cancel" Grid.Row="1" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Width="80" Click="BtnCancelFunction_Click" Margin="30,0,30,0"/>
             <Button Name ="_btnFunction" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Content="Add" Grid.Row="1" Width="80" Click="BtnFunction_Click"/>
         </StackPanel>
-        <!--materialDesign:Flipper Style="{StaticResource MaterialDesignCardFlipper}">
-            <materialDesign:Flipper.FrontContent>
-                <Grid Height="256" Width="200">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="160" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <materialDesign:ColorZone Mode="PrimaryLight" VerticalAlignment="Stretch">
-                        <materialDesign:PackIcon Kind="AccountCircle" Height="128" Width="128"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center" />
-                    </materialDesign:ColorZone>
-                    <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <TextBlock>
-                            James Willock
-                        </TextBlock>
-                        <Button Style="{StaticResource MaterialDesignFlatButton}" Command="{x:Static materialDesign:Flipper.FlipCommand}" Margin="0 4 0 0">
-                            EDIT
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </materialDesign:Flipper.FrontContent>
-            <materialDesign:Flipper.BackContent>
-                <Grid Height="256" Width="200">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <materialDesign:ColorZone  Mode="Accent" Padding="6">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Style="{StaticResource MaterialDesignToolForegroundButton}" Command="{x:Static materialDesign:Flipper.FlipCommand}"
-                                    HorizontalAlignment="Left">
-                                <materialDesign:PackIcon Kind="ArrowLeft" HorizontalAlignment="Right" />
-                            </Button>
-                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">
-                                       EDIT USER
-                            </TextBlock>
-                        </StackPanel>
-                    </materialDesign:ColorZone>
-                    <Grid  Grid.Row="1" Margin="0 6 0 0" HorizontalAlignment="Center"  VerticalAlignment="Top"  Width="172">
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <TextBox materialDesign:HintAssist.Hint="First name" materialDesign:HintAssist.IsFloating="True" Margin="0 12 0 0">
-                            James
-                        </TextBox>
-                        <TextBox Grid.Row="1" materialDesign:HintAssist.Hint="Last name" materialDesign:HintAssist.IsFloating="True" Margin="0 12 0 0">
-                            Willock
-                        </TextBox>
-                        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0 12 0 0" HorizontalAlignment="Right">
-                            <TextBlock VerticalAlignment="Center">
-                                Email Contact
-                            </TextBlock>
-                            <ToggleButton Margin="8 0 0 0"></ToggleButton>
-                        </StackPanel>
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 12 0 0" HorizontalAlignment="Right">
-                            <TextBlock VerticalAlignment="Center">
-                                Telephone Contact
-                            </TextBlock>
-                            <ToggleButton Margin="8 0 0 0"></ToggleButton>
-                        </StackPanel>
-                    </Grid>
-                </Grid>
-            </materialDesign:Flipper.BackContent>
-        </-->
     </Grid>
 </Window>

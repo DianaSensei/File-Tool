@@ -304,9 +304,9 @@
                         </DataGrid.Resources>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
-                            <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileInfomation.Name ,Mode=OneWay}" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="New FileName" MinWidth="250" Width="SizeToCells" Binding="{Binding NewNameShow}" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FileInfomation.FullName,Mode=OneWay}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileName ,Mode=OneWay}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="New FileName" MinWidth="250" Width="SizeToCells" Binding="{Binding NewName}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FullPath,Mode=OneWay}" IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>
@@ -325,9 +325,9 @@
                         </DataGrid.Resources>
                         <DataGrid.Columns>
                             <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
-                            <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderInfomation.Name ,Mode=OneWay}"  IsReadOnly="True"/>
-                            <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" />
-                            <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FolderInfomation.FullName,Mode=OneWay}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderName ,Mode=OneWay}"  IsReadOnly="True"/>
+                            <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FullPath,Mode=OneWay}" IsReadOnly="True"/>
                         </DataGrid.Columns>
                     </DataGrid>
                 </TabItem>

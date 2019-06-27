@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace File_Tool
 {
-    
     #region Action xử lí 
     public interface IActions
     {
@@ -30,18 +29,18 @@ namespace File_Tool
         void ShowUpdateArgDialog(MainWindow mainWindow);
     }
     #endregion 
-    /// <summary>
-    /// Class change name with NewCase.
-    /// </summary>
     public class NewCaser : IActions , INotifyPropertyChanged
     {
         public IArgs Args { get; set; }
-
         public string Process(string origin)
         {
             var args = Args as NewCaseArgs;
+            var path = PathHandler.getPath(origin);
+            var filename = PathHandler.getFileName(origin);
+            var extension = PathHandler.getExtension(origin);
+
             int type = args.Case;
-            var result = origin;
+            var result = filename;
             switch (type) {
                 case 0://To Upper Case
                     result = result.ToUpper();break;
@@ -50,10 +49,9 @@ namespace File_Tool
                 case 2://To First Letter
                     result = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(result.ToLower());break;
             }
-            return result;
+            return PathHandler.combinePath(path,result,extension);
         }
         public event PropertyChangedEventHandler PropertyChanged;
-
         void RaiseChangeEvent(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -72,7 +70,6 @@ namespace File_Tool
                 (Args as NewCaseArgs).Case = Case;
             }
         }
-
         public string Description
         {
             get
@@ -91,18 +88,20 @@ namespace File_Tool
     public class Replacer : IActions, INotifyPropertyChanged
     {
         public IArgs Args { get; set; }
-
         public string Process(string origin)
         {
             var args = Args as ReplaceArgs;
+            var path = PathHandler.getPath(origin);
+            var filename = PathHandler.getFileName(origin);
+            var extension = PathHandler.getExtension(origin);
+
             string needle = args.Needle;
             string hammer = args.Hammer;
-            var result = origin;
+            var result = filename;
             result = result.Replace(needle, hammer);
-            return result;
+            return PathHandler.combinePath(path,result,extension);
         }
         public event PropertyChangedEventHandler PropertyChanged;
-
         void RaiseChangeEvent(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -110,13 +109,19 @@ namespace File_Tool
         }
         public void ShowUpdateArgDialog(MainWindow mainWindow )
         {
+            var Needle = (Args as ReplaceArgs).Needle;
+            var Hammer = (Args as ReplaceArgs).Hammer;
             var screen = new SelectFunctionWindow(Args as ReplaceArgs,mainWindow);
             if (screen.ShowDialog() == true)
             {
                 RaiseChangeEvent("Description");
             }
+            else
+            {
+                (Args as ReplaceArgs).Needle = Needle;
+                (Args as ReplaceArgs).Hammer = Hammer;
+            }
         }
-
         public string Description
         {
             get
@@ -129,17 +134,20 @@ namespace File_Tool
             }
         }
     }
-
     public class ISBN : IActions, INotifyPropertyChanged
     {
         public IArgs Args { get; set; }
 
         public string Process(string origin)
         {
-            var args = Args as MoveArgs;
+            var args = Args as ISBNArgs;
+            var path = PathHandler.getPath(origin);
+            var filename = PathHandler.getFileName(origin);
+            var extension = PathHandler.getExtension(origin);
+
             int type = args.Modes;
-            var result = origin;
-            string isbn = "", filename = "";
+            var result = filename;
+            string g_isbn = "", g_filename = "";
             Match match;
             string regex_I_F = @"(?<isbn>[0-9_-]{1,})[ ](?<filename>[a-zA-Z ,]{1,})";
             string regex_F_I = @"(?<filename>[a-zA-Z ,]{1,})[ ](?<isbn>[0-9_-]{1,})";
@@ -148,30 +156,30 @@ namespace File_Tool
             {
                 case 0://IBSN - Filename                   
                     match = Regex.Match(result, regex_I_F);
-                    isbn = match.Groups["isbn"].Value;
-                    filename = match.Groups["filename"].Value;
-                    if (isbn == "" && filename == "")
+                    g_isbn = match.Groups["isbn"].Value;
+                    g_filename = match.Groups["filename"].Value;
+                    if (g_isbn == "" && g_filename == "")
                     {
                         match = Regex.Match(result, regex_F_I);
-                        isbn = match.Groups["isbn"].Value;
-                        filename = match.Groups["filename"].Value;
-                        result = isbn + " " + filename; break;
+                        g_isbn = match.Groups["isbn"].Value;
+                        g_filename = match.Groups["filename"].Value;
+                        result = g_isbn + " " + g_filename; break;
                     }
-                    result = isbn + " " + filename; break;
+                    result = g_isbn + " " + g_filename; break;
                 case 1://Filename - ISBN
                     match = Regex.Match(result, regex_F_I);
-                    isbn = match.Groups["isbn"].Value;
-                    filename = match.Groups["filename"].Value;
-                    if (isbn == "" && filename == "")
+                    g_isbn = match.Groups["isbn"].Value;
+                    g_filename = match.Groups["filename"].Value;
+                    if (g_isbn == "" && g_filename == "")
                     {
                         match = Regex.Match(result, regex_I_F);
-                        isbn = match.Groups["isbn"].Value;
-                        filename = match.Groups["filename"].Value;
-                        result = filename + " " + isbn; break;
+                        g_isbn = match.Groups["isbn"].Value;
+                        g_filename = match.Groups["filename"].Value;
+                        result = g_filename + " " + g_isbn; break;
                     }
-                    result = filename + " " + isbn; break;
+                    result = g_filename + " " + g_isbn; break;
             }
-            return result;
+            return PathHandler.combinePath(path,result,extension);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -184,15 +192,15 @@ namespace File_Tool
 
         public void ShowUpdateArgDialog(MainWindow mainWindow)
         {
-            var Mode = (Args as MoveArgs).Modes;
-            var screen = new SelectFunctionWindow(Args as MoveArgs);
+            var Mode = (Args as ISBNArgs).Modes;
+            var screen = new SelectFunctionWindow(Args as ISBNArgs, mainWindow);
             if (screen.ShowDialog() == true)
             {
                 RaiseChangeEvent("Description");
             }
             else
             {
-                (Args as MoveArgs).Modes = Mode;
+                (Args as ISBNArgs).Modes = Mode;
             }
         }
 
@@ -200,7 +208,7 @@ namespace File_Tool
         {
             get
             {
-                var args = Args as MoveArgs;
+                var args = Args as ISBNArgs;
                 var mode = args.Modes;
                 string types = "";
                 if (mode == 0) types = "IBSN - Filename";
@@ -210,19 +218,13 @@ namespace File_Tool
             }
         }
     }
-
     public class FullNameNormalize : IActions, INotifyPropertyChanged
     {
         public IArgs Args { get; set; }
 
         public string Description
         {
-            get
-            {
-                var args = Args as FullnameNormalizeArgs;
-                string result = $"Fullname Normalize";
-                return result;
-            }
+            get => "Fullname Normalize";
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -236,7 +238,11 @@ namespace File_Tool
         public string Process(string origin)
         {
             var args = Args as FullnameNormalizeArgs;
-            string result = origin;
+            var path = PathHandler.getPath(origin);
+            var filename = PathHandler.getFileName(origin);
+            var extension = PathHandler.getExtension(origin);
+
+            string result = filename;
 
             var space = ' ';
             string[] temps = result.Split(new[] { space }, StringSplitOptions.RemoveEmptyEntries);
@@ -247,7 +253,7 @@ namespace File_Tool
                 var lowerCase = temp.ToLower();
                 result += lowerCase[0].ToString().ToUpper() + lowerCase.Substring(1) + " ";
             }
-            return result.Trim();
+            return PathHandler.combinePath(path,result.Trim(),extension);
         }
         
         public void ShowUpdateArgDialog(MainWindow mainWindow)
@@ -257,6 +263,74 @@ namespace File_Tool
             {
                 RaiseChangeEvent("Description");
             }
+        }
+    }
+    public class ExtensionChanger : IActions, INotifyPropertyChanged
+    {
+        public IArgs Args { get; set; }
+        public string Description
+        {
+            get
+            {
+                var args = Args as ExtensionArgs;
+                string newExt = args.newExt.Replace(" ","");
+                if (newExt[0] != '.') newExt = '.' + newExt;
+                string result = $"Change Extension to \"{newExt}\"";
+                return result;
+            }
+        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        void RaiseChangeEvent(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        }
+        public string Process(string origin)
+        {
+            var args = Args as ExtensionArgs;
+            var path = PathHandler.getPath(origin);
+            var filename = PathHandler.getFileName(origin);
+            var extension = PathHandler.getExtension(origin);
+
+            string newExt = args.newExt.Replace(" ", "");
+            if (newExt[0] != '.') newExt = "." + newExt;
+            return PathHandler.combinePath(path, filename, newExt);
+        }
+        public void ShowUpdateArgDialog(MainWindow mainWindow)
+        {
+            var newExt = (Args as ExtensionArgs).newExt;
+            var screen = new SelectFunctionWindow(Args as ExtensionArgs, mainWindow);
+            if (screen.ShowDialog() == true)
+            {
+                RaiseChangeEvent("Description");
+            }
+            else
+            {
+                (Args as ExtensionArgs).newExt = newExt;
+            }
+        }
+    }
+    public class PathHandler
+    {
+        public static string combinePath(string path, string filename, string extension)
+        {
+            string res = path + "\\" + filename + extension;
+            return res;
+        }
+        public static string getPath(string fullPath)
+        {
+            var m_path = System.IO.Directory.GetParent(fullPath).FullName;
+            return m_path;
+        }
+        public static string getFileName(string fullPath)
+        {
+            var m_filename = System.IO.Path.GetFileNameWithoutExtension(fullPath);
+            return m_filename;
+        }
+        public static string getExtension(string fullPath)
+        {
+            var m_ext = System.IO.Path.GetExtension(fullPath);
+            return m_ext;
         }
     }
 }

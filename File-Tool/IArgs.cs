@@ -6,25 +6,26 @@ using System.Threading.Tasks;
 
 namespace File_Tool
 {
-    public interface IArgs
-    {
-    }
+    public interface IArgs{    }
     public class ReplaceArgs : IArgs
     {
         public string Needle { get; set; }
         public string Hammer { get; set; }
 
     }
-    public class MoveArgs : IArgs
+    public class ISBNArgs : IArgs
     {
         public int Modes { get; set; }
     }
-
     public class NewCaseArgs : IArgs {
         public int Case { get; set; }
     }
     public class FullnameNormalizeArgs : IArgs {
     }
     public class UniqueNameArgs : IArgs {
+    }
+    public class ExtensionArgs : IArgs
+    {
+        public string newExt { get; set; }
     }
 }

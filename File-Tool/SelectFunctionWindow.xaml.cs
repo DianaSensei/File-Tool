@@ -27,11 +27,14 @@ namespace File_Tool
         private string foregroundColor = "Black";
         private string backgroundColor = "#f5f5f5";
 
-        private int cases;
+        private int cases = -1;
         private string needle = "";
         private string hammer = "";
         private int modes = -1;
+        private string newext = "";
+        #endregion
 
+        #region PropertyChanged value
         public string ForegroundColor
         {
             get => foregroundColor;
@@ -87,13 +90,23 @@ namespace File_Tool
                 RaiseChangedEvent("Modes");
             }
         }
+        public string newExt
+        {
+            get => newext;
+            set
+            {
+                newext = value;
+                RaiseChangedEvent("newExt");
+            }
+        }
         #endregion
 
         #region Args DataContext
         public NewCaseArgs newCaseArgs;
         public ReplaceArgs replaceArgs;
-        public MoveArgs moveArgs;
+        public ISBNArgs moveArgs;
         public FullnameNormalizeArgs fullnameNormalizeArgs;
+        public ExtensionArgs extArgs;
         public MainWindow mainWindow;
         #endregion
 
@@ -113,7 +126,7 @@ namespace File_Tool
         ///                        4 = Unique Name 
         /// </summary>
         #region Constructor With Parameter
-        public SelectFunctionWindow(MoveArgs moveArgs)
+        public SelectFunctionWindow()
         {
             InitializeComponent();
         }
@@ -142,8 +155,7 @@ namespace File_Tool
             _comboboxSelect.SelectedIndex = 0;
             _comboboxSelect.IsEnabled = false;
         }
-
-        public SelectFunctionWindow(MoveArgs args, MainWindow mainWindow)
+        public SelectFunctionWindow(ISBNArgs args, MainWindow mainWindow)
         {
             InitializeComponent();
             moveArgs = args;
@@ -153,7 +165,6 @@ namespace File_Tool
             _comboboxSelect.SelectedIndex = 2;
             _comboboxSelect.IsEnabled = false;
         }
-
         public SelectFunctionWindow(FullnameNormalizeArgs args, MainWindow mainWindow)
         {
             InitializeComponent();
@@ -162,6 +173,16 @@ namespace File_Tool
             ChangesContentShowButtonFunction("OK");
             Mode = false;
             _comboboxSelect.SelectedIndex = 3;
+            _comboboxSelect.IsEnabled = false;
+        }
+        public SelectFunctionWindow(ExtensionArgs args,MainWindow mainWindow)
+        {
+            InitializeComponent();
+            extArgs = args;
+            this.mainWindow = mainWindow;
+            ChangesContentShowButtonFunction("OK");
+            Mode = false;
+            _comboboxSelect.SelectedIndex = 5;
             _comboboxSelect.IsEnabled = false;
         }
         #endregion
@@ -173,14 +194,28 @@ namespace File_Tool
                 if (!Needle.Any() || !Hammer.Any()) return;
                 mainWindow.actions.Add(new Replacer() { Args = new ReplaceArgs() { Needle = this.Needle, Hammer = this.Hammer } });
             }
+            if (_comboboxSelect.SelectedIndex == 1)
+            {
+                if (Case == -1) return;
+                mainWindow.actions.Add(new NewCaser() { Args = new NewCaseArgs() { Case = this.Case } });
+            }
             else if (_comboboxSelect.SelectedIndex == 2)
             {
                 if (modes == -1) return;
-                mainWindow.actions.Add(new ISBN() { Args = new MoveArgs() { Modes = this.Modes } });
+                mainWindow.actions.Add(new ISBN() { Args = new ISBNArgs() { Modes = this.Modes } });
             }
             else if (_comboboxSelect.SelectedIndex == 3)
             {
                 mainWindow.actions.Add(new FullNameNormalize());
+            }
+            else if (_comboboxSelect.SelectedIndex == 4)
+            {
+                //Unique Name
+            }
+            else if (_comboboxSelect.SelectedIndex == 5)
+            {
+                if (!newExt.Any()) return;
+                mainWindow.actions.Add(new ExtensionChanger() { Args = new ExtensionArgs() { newExt = this.newExt } });
             }
         }
         private void BtnEditFunction_Click(object sender, RoutedEventArgs e)
@@ -214,6 +249,12 @@ namespace File_Tool
                 this._stackpanelParent.Children.Add(_stackpanelParameterMove);
                 return;
             }
+            if(cb.SelectedIndex == 5)
+            {
+                RemoveStackPanel();
+                this._stackpanelParent.Children.Add(_stackpanelParameterExtension);
+                return;
+            }
            
             else RemoveStackPanel();
         }
@@ -238,23 +279,30 @@ namespace File_Tool
                 this._stackpanelParent.Children.Add(_stackpanelParameterMove);
                 return;
             }
+            if(cb.SelectedIndex == 5)
+            {
+                RemoveStackPanel();
+                this._stackpanelParent.Children.Add(_stackpanelParameterExtension);
+                return;
+            }
             else RemoveStackPanel();
 
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
             if (newCaseArgs != null)
                 DataContext = newCaseArgs;
             else if (replaceArgs != null)
                 DataContext = replaceArgs;
-            else if (mainWindow != null)
-                DataContext = this;
             else if (moveArgs != null)
                 DataContext = moveArgs;
             else if (fullnameNormalizeArgs != null)
                 DataContext = fullnameNormalizeArgs;
+            else if (extArgs != null)
+                DataContext = extArgs;
+            else if (mainWindow != null)
+                DataContext = this;
             LoadColor();
             RemoveStackPanel();
         }
@@ -271,6 +319,8 @@ namespace File_Tool
                 this._stackpanelParent.Children.Remove(_stackpanelParameterNewCase);
             if (this._stackpanelParent.Children.Contains(_stackpanelParameterMove))
                 this._stackpanelParent.Children.Remove(_stackpanelParameterMove);
+            if (this._stackpanelParent.Children.Contains(_stackpanelParameterExtension))
+                this._stackpanelParent.Children.Remove(_stackpanelParameterExtension);
         }
         private void BtnFunction_Click(object sender, RoutedEventArgs e)
         {
