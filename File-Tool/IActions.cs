@@ -210,4 +210,53 @@ namespace File_Tool
             }
         }
     }
+
+    public class FullNameNormalize : IActions, INotifyPropertyChanged
+    {
+        public IArgs Args { get; set; }
+
+        public string Description
+        {
+            get
+            {
+                var args = Args as FullnameNormalizeArgs;
+                string result = $"Fullname Normalize";
+                return result;
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaiseChangeEvent(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        }
+
+        public string Process(string origin)
+        {
+            var args = Args as FullnameNormalizeArgs;
+            string result = origin;
+
+            var space = ' ';
+            string[] temps = result.Split(new[] { space }, StringSplitOptions.RemoveEmptyEntries);
+            result = "";
+
+            foreach(var temp in temps)
+            {
+                var lowerCase = temp.ToLower();
+                result += lowerCase[0].ToString().ToUpper() + lowerCase.Substring(1) + " ";
+            }
+            return result.Trim();
+        }
+        
+        public void ShowUpdateArgDialog(MainWindow mainWindow)
+        {
+            var screen = new SelectFunctionWindow(Args as FullnameNormalizeArgs, mainWindow);
+            if (screen.ShowDialog() == true)
+            {
+                RaiseChangeEvent("Description");
+            }
+        }
+    }
 }

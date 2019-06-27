@@ -93,6 +93,7 @@ namespace File_Tool
         public NewCaseArgs newCaseArgs;
         public ReplaceArgs replaceArgs;
         public MoveArgs moveArgs;
+        public FullnameNormalizeArgs fullnameNormalizeArgs;
         public MainWindow mainWindow;
         #endregion
 
@@ -141,6 +142,28 @@ namespace File_Tool
             _comboboxSelect.SelectedIndex = 0;
             _comboboxSelect.IsEnabled = false;
         }
+
+        public SelectFunctionWindow(MoveArgs args, MainWindow mainWindow)
+        {
+            InitializeComponent();
+            moveArgs = args;
+            this.mainWindow = mainWindow;
+            ChangesContentShowButtonFunction("OK");
+            Mode = false;
+            _comboboxSelect.SelectedIndex = 2;
+            _comboboxSelect.IsEnabled = false;
+        }
+
+        public SelectFunctionWindow(FullnameNormalizeArgs args, MainWindow mainWindow)
+        {
+            InitializeComponent();
+            fullnameNormalizeArgs = args;
+            this.mainWindow = mainWindow;
+            ChangesContentShowButtonFunction("OK");
+            Mode = false;
+            _comboboxSelect.SelectedIndex = 3;
+            _comboboxSelect.IsEnabled = false;
+        }
         #endregion
 
         private void BtnAddFunction_Click(object sender, RoutedEventArgs e)
@@ -154,6 +177,10 @@ namespace File_Tool
             {
                 if (modes == -1) return;
                 mainWindow.actions.Add(new ISBN() { Args = new MoveArgs() { Modes = this.Modes } });
+            }
+            else if (_comboboxSelect.SelectedIndex == 3)
+            {
+                mainWindow.actions.Add(new FullNameNormalize());
             }
         }
         private void BtnEditFunction_Click(object sender, RoutedEventArgs e)
@@ -187,6 +214,7 @@ namespace File_Tool
                 this._stackpanelParent.Children.Add(_stackpanelParameterMove);
                 return;
             }
+           
             else RemoveStackPanel();
         }
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -216,7 +244,7 @@ namespace File_Tool
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
+
             if (newCaseArgs != null)
                 DataContext = newCaseArgs;
             else if (replaceArgs != null)
@@ -225,6 +253,8 @@ namespace File_Tool
                 DataContext = this;
             else if (moveArgs != null)
                 DataContext = moveArgs;
+            else if (fullnameNormalizeArgs != null)
+                DataContext = fullnameNormalizeArgs;
             LoadColor();
             RemoveStackPanel();
         }
