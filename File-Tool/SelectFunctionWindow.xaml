@@ -111,6 +111,10 @@
                 </ComboBox>
             </StackPanel>
             <StackPanel Name="_stackpanelParameterExtension">
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding oldExt}" 
+                         Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                         materialDesign:HintAssist.Hint="Change Extention from"
+                         HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
                 <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding newExt}" 
                          Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
                          materialDesign:HintAssist.Hint="Change Extention to"

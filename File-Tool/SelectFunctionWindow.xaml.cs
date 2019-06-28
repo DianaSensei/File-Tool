@@ -31,6 +31,7 @@ namespace File_Tool
         private string needle = "";
         private string hammer = "";
         private int modes = -1;
+        private string oldext = "";
         private string newext = "";
         #endregion
 
@@ -97,6 +98,15 @@ namespace File_Tool
             {
                 newext = value;
                 RaiseChangedEvent("newExt");
+            }
+        }
+        public string oldExt
+        {
+            get => oldext;
+            set
+            {
+                oldext = value;
+                RaiseChangedEvent("oldExt");
             }
         }
         #endregion
@@ -214,8 +224,8 @@ namespace File_Tool
             }
             else if (_comboboxSelect.SelectedIndex == 5)
             {
-                if (!newExt.Any()) return;
-                mainWindow.actions.Add(new ExtensionChanger() { Args = new ExtensionArgs() { newExt = this.newExt } });
+                if (!newExt.Any() && !oldExt.Any()) return;
+                mainWindow.actions.Add(new ExtensionChanger() { Args = new ExtensionArgs() {oldExt=this.oldExt, newExt = this.newExt } });
             }
         }
         private void BtnEditFunction_Click(object sender, RoutedEventArgs e)

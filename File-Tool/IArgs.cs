@@ -26,6 +26,7 @@ namespace File_Tool
     }
     public class ExtensionArgs : IArgs
     {
+        public string oldExt { get; set; }
         public string newExt { get; set; }
     }
 }

@@ -22,6 +22,8 @@ using File_Tool;
 using System.Diagnostics;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Controls.Primitives;
+using System.Text.RegularExpressions;
+
 #endregion
 
 namespace BatchRename
@@ -29,6 +31,9 @@ namespace BatchRename
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region Attributes
+        public string regex_check_filename_index = @"(?<filename>[\(,\),_,\-,.,\w+]{1,})(?<indextag>\((?<index>\d+)\)$)";
+        System.Timers.Timer timer = new System.Timers.Timer(1000);
+
         public const string PresetKey = "batchpreset17clc3";
         private int currentItemCount;
         private int totalitem;
@@ -41,20 +46,9 @@ namespace BatchRename
         private string backgroundtabitemColor = "#f5f5f5";
         #endregion
 
-        public class ObservableHashSetCollection<T> : ObservableCollection<T>
-        {
-            public Boolean AddUnique(T item)
-            {
-                if (Contains(item))
-                    return false;
-                base.Add(item);
-                return true;
-            }
-        }
-
         #region List manager
-        ObservableCollection<m_File> fileList = new ObservableCollection<m_File>();
-        ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
+        BindingList<m_File> fileList = new BindingList<m_File>();
+        BindingList<m_Folder> folderList = new BindingList<m_Folder>();
         public BindingList<IActions> actions = new BindingList<IActions>();
         #endregion
 
@@ -191,7 +185,7 @@ namespace BatchRename
             }
             #endregion
         }
-        public class Folder : INotifyPropertyChanged
+        public class m_Folder : INotifyPropertyChanged
         {
             private string newName;
             private string errorStatus;
@@ -276,67 +270,111 @@ namespace BatchRename
         {
             if (_tabcontrolShow.SelectedIndex == 0)
             {
-                if (fileList.Any())
+                if (fileList.Any() && actions.Any())
                 {
-                    _dialoghost.CloseOnClickAway = false;
-                    _imgCheckProcess.Opacity = 0;
-                    _dialoghost.IsOpen = true;
-                }
-                foreach (var victim in fileList)
-                {
-                    var filename = victim.FullPath;
-                    foreach (var action in actions)
+                    ShowCompleteDialog();
+                    foreach (var victim in fileList)
                     {
-                        filename = action.Process(filename);
-                    }
-                    var result = filename;
-                    Debug.WriteLine(result);
-
-                    var path = PathHandler.getPath(result);
-                    var tempres = PathHandler.getFileName(result);
-                    var extension = PathHandler.getExtension(result);
-                    int count = 1;
-                    if (actions.Any())
-                    {
-                        // Handle exit file with regex
-                        if ((tempres + extension) != victim.FileName)
-                        {
-                            while (File.Exists(combinePath(path, tempres, extension)))
-                            {
-                                count++;
-                                tempres = result + "(" + count + ")";
-                            }
-                            if (count > 1) result = tempres;
-                        }
-                        Debug.WriteLine(victim.FullPath);
-                        Debug.WriteLine(combinePath(path, result, extension));
-                        File.Move(victim.FullPath, combinePath(path, result, extension));
+                        HandleFile(victim);
                         CurrentItemCount++;
                     }
+                    CloseCompleteDialog();
+                    fileList.Clear();
                 }
-                _dialoghost.CloseOnClickAway = true;
-                _imgCheckProcess.Opacity = 1;
-                _processbar.Value = 100;
-                fileList.Clear();
             }
             else
             {
-                if (folderList.Any())
+                if (folderList.Any() && actions.Any())
                 {
-                    _dialoghost.CloseOnClickAway = false;
-                    _imgCheckProcess.Opacity = 0;
-                    _dialoghost.IsOpen = true;
+                    ShowCompleteDialog();
+                    foreach (var victim in folderList)
+                    {
+                        HandleFolder(victim);
+                        CurrentItemCount++;
+                    }
+                    CloseCompleteDialog();
+                    folderList.Clear();
                 }
             }
-            
             CurrentItemCount = 0;
         }
+        private void HandleFile(m_File victim)
+        {
+            if (victim.FileName == victim.NewName)
+            {
+                if (!victim.FileName.Equals(victim.NewName))
+                    File.Move(victim.FullPath, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                return;
+            }
+            var path = PathHandler.getPath(victim.FullPath);
+            var oldname = victim.FileName;
 
+            var newname = PathHandler.getFileName(victim.NewName);
+            var newext = PathHandler.getExtension(victim.NewName);
+
+            int count;
+            var result = newname;
+            var temp = result;
+            if (Regex.IsMatch(result, regex_check_filename_index))
+            {
+                Console.WriteLine("Matching!");
+                Match match = Regex.Match(result, regex_check_filename_index);
+                count = int.Parse(match.Groups["index"].Value);
+                Console.WriteLine(count);
+                result = match.Groups["filename"].Value;
+                Console.WriteLine("Filename: " + result);
+                temp = result;
+            }
+            else count = 1;
+            while (File.Exists(PathHandler.combinePath(path, result, newext)))
+            {
+                result = $"{temp}({++count})";
+            }
+            File.Move(victim.FullPath, PathHandler.combinePath(path, result, newext));
+        }
+        private void HandleFolder(m_Folder victim)
+        {
+            if (victim.FolderName == victim.NewName)
+            {
+                if (!victim.FolderName.Equals(victim.NewName))
+                {
+                    Directory.Move(victim.FullPath, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                }
+                return;
+            }
+            var path = PathHandler.getPath(victim.FullPath);
+            var oldname = victim.FolderName;
+            var newname = victim.NewName;
+
+            int count;
+            var result = newname;
+            var temp = result;
+            if (Regex.IsMatch(result, regex_check_filename_index))
+            {
+                Console.WriteLine("Matching!");
+                Match match = Regex.Match(result, regex_check_filename_index);
+                count = int.Parse(match.Groups["index"].Value);
+                Console.WriteLine(count);
+                result = match.Groups["filename"].Value;
+                Console.WriteLine("Filename: " + result);
+                temp = result;
+            }
+            else count = 1;
+            while (Directory.Exists(PathHandler.combinePath(path, result, "")))
+            {
+                result = $"{temp}({++count})";
+            }
+
+            Directory.Move(victim.FullPath, PathHandler.combinePath(path, result, ""));
+        }
         #region Add & Remove Button
         private void BtnAddFunc(object sender, RoutedEventArgs e)
         {
             SelectFunctionWindow selectfunctionwd = new SelectFunctionWindow(this);
-            selectfunctionwd.Show();
+            selectfunctionwd.ShowDialog();
+            if (_tabcontrolShow.SelectedIndex == 0)
+                UpdateNewName("file");
+            else UpdateNewName("folder");
         }
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
@@ -368,14 +406,22 @@ namespace BatchRename
         private void BtnRemove_Click(object sender, RoutedEventArgs e)
         {
             if (FileShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 0)
-                fileList.RemoveAt(FileShow.SelectedIndex);
-            if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
-                folderList.RemoveAt(FolderShow.SelectedIndex);
+                for(int i = FileShow.SelectedItems.Count -1; i>=0;i--)
+                {
+                    Debug.WriteLine("Remove item: " + (FileShow.SelectedItems[i] as m_File).FileName );
+                    fileList.Remove(FileShow.SelectedItems[i] as m_File);
+                }
+            else if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
+                for (int i = FolderShow.SelectedItems.Count - 1; i >= 0; i--)
+                {
+                    Debug.WriteLine("Remove item: " + (FolderShow.SelectedItems[i] as m_Folder).FolderName);
+                    folderList.Remove(FolderShow.SelectedItems[i] as m_Folder);
+                }
         }
         #endregion
 
         #region Load File & Folder
-        private Boolean LoadFileFromPath(string RootPath)
+        private void LoadFileFromPath(string RootPath)
         {
             DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
             if (FolderPath.Exists)
@@ -383,15 +429,15 @@ namespace BatchRename
                 FileInfo[] listFileInfo = FolderPath.GetFiles();
                 foreach (var file in listFileInfo)
                 {
-                    fileList.Add(new m_File() {  FileName = file.Name, FullPath =file.FullName, NewName = file.Name, ErrorStatus = "ChartDonut" });
+                    var m_file = new m_File() { FileName = file.Name, FullPath = file.FullName, NewName = file.Name, ErrorStatus = "ChartDonut" };
+                    if (CheckExitsInFileList(m_file)) continue;
+                    fileList.Add(m_file);
                     UpdateNewName("file");
                     TotalItem++;
                 }
-                return true;
             }
-            return false;
         }
-        private Boolean LoadFolderFromPath(string RootPath)
+        private void LoadFolderFromPath(string RootPath)
         {
             DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
             if (FolderPath.Exists)
@@ -399,28 +445,82 @@ namespace BatchRename
                 DirectoryInfo[] listFolderInfo = FolderPath.GetDirectories();
                 foreach (var folder in listFolderInfo)
                 {
-                    folderList.Add(new Folder() { FolderName = folder.Name, FullPath = folder.FullName, NewName = folder.Name, ErrorStatus = "ChartDonut" });
+                    var m_foler = new m_Folder() { FolderName = folder.Name, FullPath = folder.FullName, NewName = folder.Name, ErrorStatus = "ChartDonut" };
+                    if (CheckExitsInFolderList(m_foler)) continue;
+                    folderList.Add(m_foler);
                     UpdateNewName("folder");
                     TotalItem++;
                 }
-                return true;
             }
-            return false;
         }
         #endregion
 
+        #region Other
+        private bool CheckExitsInFileList(m_File item)
+        {
+            foreach (var items in fileList)
+                if (items.FullPath == item.FullPath)
+                    return true;
+            return false;
+        }
+        private bool CheckExitsInFolderList(m_Folder item)
+        {
+            foreach (var items in folderList)
+                if (items.FullPath == item.FullPath)
+                    return true;
+            return false;
+        }
         private void UpdateNewName(string Mode)
         {
-            if(Mode == "file")
+            if (Mode == "file")
             {
-
+                foreach (var victim in fileList)
+                {
+                    string newName = victim.FullPath;
+                    foreach (var action in actions)
+                    {
+                        newName = action.Process(newName);
+                    }
+                    victim.NewName = PathHandler.getFileName(newName) + PathHandler.getExtension(newName);
+                }
             }
             else
             {
-
+                foreach (var victim in folderList)
+                {
+                    string newName = victim.FullPath;
+                    foreach (var action in actions)
+                    {
+                        newName = action.Process(newName);
+                    }
+                    victim.NewName = PathHandler.getFileName(newName) + PathHandler.getExtension(newName);
+                }
             }
         }
+        private void ShowCompleteDialog()
+        {
+            _dialoghost.CloseOnClickAway = false;
+            _imgCheckProcess.Opacity = 0;
+            _dialoghost.IsOpen = true;
+        }
+        private void CloseCompleteDialog()
+        {
+            timer.Elapsed += Timer_Elapsed;
+            timer.Enabled = true;
+            timer.Start();
+        }
+        #endregion
 
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _dialoghost.CloseOnClickAway = true;
+                _imgCheckProcess.Opacity = 1;
+                    _processbar.Value = 100;
+                    timer.Stop();
+            });
+        }
         #region Preset Method
         private void BtnSavePreset(object sender, RoutedEventArgs e)
         {
@@ -490,7 +590,7 @@ namespace BatchRename
                 {
                     case "NC":
                         {
-                            LoadActionNewCase(element);
+                            
                         }
                         break;
                     case "FN":
@@ -519,13 +619,6 @@ namespace BatchRename
 
             return true;
         }
-        private bool LoadActionNewCase(string[] element)
-        {
-            NewCaser NewCaseAction = new NewCaser() { Args = new NewCaseArgs() { Case = int.Parse(element[1]) } };
-            actions.Add(NewCaseAction);
-            return true;
-        }
-
         public bool SavePreset(string path)
         {
             using (var streamWriter = new StreamWriter(path))
@@ -541,6 +634,28 @@ namespace BatchRename
                                 streamWriter.WriteLine("NC" + " " + (n.Args as NewCaseArgs).Case);
                             }
                             break;
+                        case Replacer r:
+                            {
+                                streamWriter.WriteLine("RP" + " " + (r.Args as ReplaceArgs).Needle + " " + (r.Args as ReplaceArgs).Hammer);
+                            }
+                            break;
+                        case ISBN i:
+                            {
+                                streamWriter.WriteLine("ISBN" + " " + (i.Args as ISBNArgs).Modes);
+
+                            }
+                            break;
+                        case FullNameNormalize f:
+                            {
+                                streamWriter.WriteLine("FN");
+                            }
+                            break;
+                        case ExtensionChanger e:
+                            {
+                                streamWriter.WriteLine("EC" + " " + (e.Args as ExtensionArgs).oldExt + " " + (e.Args as ExtensionArgs).newExt);
+
+                            }
+                            break;
                     }
                 }
             }
@@ -548,39 +663,22 @@ namespace BatchRename
         }
         public void WriteCommentFilePreset(StreamWriter sw)
         {
-            sw.WriteLine("#Preset File of BatchRename.");
-            sw.WriteLine("#Member 1753107 - 1753130 - 1753124.");
+            sw.WriteLine("#Preset File of BatchRename.\t Member 1753107 - 1753130 - 1753124.");
             sw.WriteLine("#Please use '#' at headline to write comment.");
             sw.WriteLine("#Syntax: \"KeyAction\" + \" \" + \"parameter1\" + \" \" + \"parameter1\" + '...'");
             sw.WriteLine("#Actions list:");
             sw.WriteLine("#1.NewCase : Key(NC): ");
-            sw.WriteLine("#parameter1 = 0: ToUpperCase.");
-            sw.WriteLine("#parameter1 = 1: ToLowerCase.");
-            sw.WriteLine("#parameter1 = 2: ToFirstLetterCase.");
+            sw.WriteLine("#parameter1 = 0: ToUpperCase.\t 1: ToLowerCase.\t 2: ToFirstLetterCase.");
             sw.WriteLine("#2.Replace : Key(RP): ");
-            sw.WriteLine("#parameter1 =  FindWhat");
-            sw.WriteLine("#parameter2 =  ReplaceWith");
-            sw.WriteLine("#3.Move : Key(RP): ");
-            sw.WriteLine("#parameter1 = StartIndex");
-            sw.WriteLine("#parameter2 = Length");
+            sw.WriteLine("#parameter1 =  FindWhat\t parameter2 =  ReplaceWith");
+            sw.WriteLine("#3.Move : Key(ISBN): ");
+            sw.WriteLine("#parameter1 = StartIndex\t parameter2 = Length");
             sw.WriteLine("#4.Fullname Normalize : Key(FN): ");
-            sw.WriteLine("#no parameter.");
             sw.WriteLine("#5.Unique Name: Key(UN): ");
-            sw.WriteLine("#no parameter.");
+            sw.WriteLine("#6.Change Extension : Key(EC): ");
+            sw.WriteLine("#parameter1 =  from\t parameter2 = to");
         }
         #endregion
-
-        public static string combinePath(string path, string filename, string extension)
-        {
-            string res = path + "\\" + filename + extension;
-            return res;
-        }
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            FileShow.ItemsSource = fileList;
-            FolderShow.ItemsSource = folderList;
-            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-        }
 
         #region Function navigate
         //Còn Lỗi
@@ -616,12 +714,18 @@ namespace BatchRename
             int index = listView.Items.IndexOf(item);
             var action = listView.Items.GetItemAt(index);
             (action as IActions).ShowUpdateArgDialog(this);
+            if (_tabcontrolShow.SelectedIndex == 0)
+                UpdateNewName("file");
+            else UpdateNewName("folder");
         }
         private void BtnRemoveFunc(object sender, RoutedEventArgs e)
         {
             var item = (sender as Button).DataContext;
             int index = listView.Items.IndexOf(item);
             actions.RemoveAt(index);
+            if (_tabcontrolShow.SelectedIndex == 0)
+                UpdateNewName("file");
+            else UpdateNewName("folder");
         }
         #endregion
 
@@ -644,6 +748,12 @@ namespace BatchRename
                 ShadowColor = "LightGray";
                 BackgroundtabitemColor = "#424751";
             }
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            FileShow.ItemsSource = fileList;
+            FolderShow.ItemsSource = folderList;
+            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
         }
     }
 }

@@ -189,13 +189,7 @@
                                                      HorizontalAlignment="Center" Margin="16" IsIndeterminate="True" />
                     <materialDesign:PackIcon Name="_imgCheckProcess" Opacity="0" VerticalAlignment="Center" Kind="Check" Foreground="Green" 
                                                                  Canvas.Left="70" Canvas.Top="37" Width="60" Height="60"/>
-                    <TextBlock Foreground="{Binding ForegroundColor}" FontWeight="Bold" Width="180" HorizontalAlignment="Center" Canvas.Left="95" Canvas.Top="130">
-                        <TextBlock.Text>
-                            <MultiBinding StringFormat="{}{0}/{1}">
-                                <Binding Path="CurrentItemCount" />
-                                <Binding Path="TotalItem" />
-                            </MultiBinding>
-                        </TextBlock.Text>
+                    <TextBlock Text="{Binding TotalItem,StringFormat=Item:{0}}" Foreground="{Binding ForegroundColor}" FontWeight="Bold" Width="180" HorizontalAlignment="Center" Canvas.Left="78" Canvas.Top="130">
                     </TextBlock>
                     <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Canvas.Left="60" Canvas.Top="160" 
                                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
@@ -255,11 +249,11 @@
                        ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Border Name="_border" OpacityMask="LightCyan" Width="auto"
+                            <Border Name="_border" OpacityMask="LightCyan" Width="auto" Margin="0,-4,0,-4"
                                 Background="{Binding Path=BackgroundfuncColor,ElementName=batchrename}"
                                 BorderThickness="2" CornerRadius="5">
                                 <Border.Effect>
-                                    <DropShadowEffect  Direction="220" ShadowDepth="3"  Color="{Binding Path=ShadowColor, ElementName=batchrename}"/>
+                                    <DropShadowEffect  Direction="210" ShadowDepth="2"  Color="{Binding Path=ShadowColor, ElementName=batchrename}"/>
                                 </Border.Effect>
                                 <Border.Style>
                                     <Style>

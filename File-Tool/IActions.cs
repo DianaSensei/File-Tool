@@ -137,7 +137,6 @@ namespace File_Tool
     public class ISBN : IActions, INotifyPropertyChanged
     {
         public IArgs Args { get; set; }
-
         public string Process(string origin)
         {
             var args = Args as ISBNArgs;
@@ -148,36 +147,28 @@ namespace File_Tool
             int type = args.Modes;
             var result = filename;
             string g_isbn = "", g_filename = "";
-            Match match;
             string regex_I_F = @"(?<isbn>[0-9_-]{1,})[ ](?<filename>[a-zA-Z ,]{1,})";
             string regex_F_I = @"(?<filename>[a-zA-Z ,]{1,})[ ](?<isbn>[0-9_-]{1,})";
 
             switch (type)
             {
-                case 0://IBSN - Filename                   
-                    match = Regex.Match(result, regex_I_F);
-                    g_isbn = match.Groups["isbn"].Value;
-                    g_filename = match.Groups["filename"].Value;
-                    if (g_isbn == "" && g_filename == "")
-                    {
-                        match = Regex.Match(result, regex_F_I);
+                case 0://IBSN - Filename
+                    if(Regex.IsMatch(result,regex_F_I)){
+                        Match match = Regex.Match(result, regex_F_I);
                         g_isbn = match.Groups["isbn"].Value;
                         g_filename = match.Groups["filename"].Value;
                         result = g_isbn + " " + g_filename; break;
                     }
-                    result = g_isbn + " " + g_filename; break;
+                    break;
                 case 1://Filename - ISBN
-                    match = Regex.Match(result, regex_F_I);
-                    g_isbn = match.Groups["isbn"].Value;
-                    g_filename = match.Groups["filename"].Value;
-                    if (g_isbn == "" && g_filename == "")
+                    if(Regex.IsMatch(result, regex_I_F))
                     {
-                        match = Regex.Match(result, regex_I_F);
+                        Match match = Regex.Match(result, regex_I_F);
                         g_isbn = match.Groups["isbn"].Value;
                         g_filename = match.Groups["filename"].Value;
                         result = g_filename + " " + g_isbn; break;
                     }
-                    result = g_filename + " " + g_isbn; break;
+                    break;
             }
             return PathHandler.combinePath(path,result,extension);
         }
@@ -273,9 +264,11 @@ namespace File_Tool
             get
             {
                 var args = Args as ExtensionArgs;
-                string newExt = args.newExt.Replace(" ","");
-                if (newExt[0] != '.') newExt = '.' + newExt;
-                string result = $"Change Extension to \"{newExt}\"";
+                args.oldExt = args.oldExt.Replace(" ", "");
+                args.newExt = args.newExt.Replace(" ", "");
+                if (args.oldExt[0] != '.') args.oldExt = '.' + args.oldExt;
+                if (args.newExt[0] != '.') args.newExt = '.' + args.newExt;
+                string result = $"Change Extension \"{args.oldExt}\" to \"{args.newExt}\"";
                 return result;
             }
         }
@@ -292,12 +285,19 @@ namespace File_Tool
             var filename = PathHandler.getFileName(origin);
             var extension = PathHandler.getExtension(origin);
 
-            string newExt = args.newExt.Replace(" ", "");
-            if (newExt[0] != '.') newExt = "." + newExt;
+            args.oldExt = args.oldExt.Replace(" ", "");
+            args.newExt = args.newExt.Replace(" ", "");
+
+            if (args.oldExt[0] != '.') args.oldExt = '.' + args.oldExt;
+            if (args.newExt[0] != '.') args.newExt = '.' + args.newExt;
+            string newExt = extension;
+            if (extension == args.oldExt)
+                newExt = args.newExt;
             return PathHandler.combinePath(path, filename, newExt);
         }
         public void ShowUpdateArgDialog(MainWindow mainWindow)
         {
+            var oldExt = (Args as ExtensionArgs).oldExt;
             var newExt = (Args as ExtensionArgs).newExt;
             var screen = new SelectFunctionWindow(Args as ExtensionArgs, mainWindow);
             if (screen.ShowDialog() == true)
@@ -306,6 +306,7 @@ namespace File_Tool
             }
             else
             {
+                (Args as ExtensionArgs).oldExt = oldExt;
                 (Args as ExtensionArgs).newExt = newExt;
             }
         }
