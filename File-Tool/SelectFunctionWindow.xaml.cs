@@ -116,6 +116,7 @@ namespace File_Tool
         public ReplaceArgs replaceArgs;
         public ISBNArgs moveArgs;
         public FullnameNormalizeArgs fullnameNormalizeArgs;
+        public UniqueNameArgs uniqueNameArgs;
         public ExtensionArgs extArgs;
         public MainWindow mainWindow;
         #endregion
@@ -185,6 +186,17 @@ namespace File_Tool
             _comboboxSelect.SelectedIndex = 3;
             _comboboxSelect.IsEnabled = false;
         }
+
+        public SelectFunctionWindow(UniqueNameArgs args, MainWindow mainWindow)
+        {
+            InitializeComponent();
+            uniqueNameArgs = args;
+            this.mainWindow = mainWindow;
+            ChangesContentShowButtonFunction("OK");
+            Mode = false;
+            _comboboxSelect.SelectedIndex = 4;
+            _comboboxSelect.IsEnabled = false;
+        }
         public SelectFunctionWindow(ExtensionArgs args,MainWindow mainWindow)
         {
             InitializeComponent();
@@ -220,7 +232,7 @@ namespace File_Tool
             }
             else if (_comboboxSelect.SelectedIndex == 4)
             {
-                //Unique Name
+                mainWindow.actions.Add(new UniqueName());
             }
             else if (_comboboxSelect.SelectedIndex == 5)
             {
@@ -309,6 +321,8 @@ namespace File_Tool
                 DataContext = moveArgs;
             else if (fullnameNormalizeArgs != null)
                 DataContext = fullnameNormalizeArgs;
+            else if (uniqueNameArgs != null)
+                DataContext = uniqueNameArgs;
             else if (extArgs != null)
                 DataContext = extArgs;
             else if (mainWindow != null)

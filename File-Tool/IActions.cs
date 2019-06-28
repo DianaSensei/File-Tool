@@ -311,6 +311,44 @@ namespace File_Tool
             }
         }
     }
+
+    public class UniqueName : IActions, INotifyPropertyChanged
+    {
+        public IArgs Args { get; set; }
+
+        public string Description
+        {
+            get => "Unique Name";
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void RaiseChangeEvent(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+
+        }
+
+        public string Process(string origin)
+        {
+            var args = Args as UniqueName;
+            var path = PathHandler.getPath(origin);
+            var filename = PathHandler.getFileName(origin);
+            var extension = PathHandler.getExtension(origin);
+
+            var result = System.Guid.NewGuid().ToString();
+            return PathHandler.combinePath(path, result, extension);
+        }
+
+        public void ShowUpdateArgDialog(MainWindow mainWindow)
+        {
+            var screen = new SelectFunctionWindow(Args as UniqueNameArgs, mainWindow);
+            if (screen.ShowDialog() == true)
+            {
+                RaiseChangeEvent("Description");
+            }
+        }
+    }
     public class PathHandler
     {
         public static string combinePath(string path, string filename, string extension)
