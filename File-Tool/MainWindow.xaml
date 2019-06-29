@@ -13,8 +13,9 @@
         TextOptions.TextRenderingMode="Auto"       
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
+        Icon="Icons/icon.png"
         Loaded="Window_Loaded"
-        Width="Auto" Height="450"
+        Width="Auto" Height="500"
         Title="Batch Rename" x:Name="batchrename" MinHeight="450"  MinWidth="850">
     <Window.Resources>
         <Style x:Key="ScrollBarTrackThumb"
@@ -204,54 +205,63 @@
             </Grid.ColumnDefinitions>
             <Grid.Resources>
                 <DataTemplate x:Key="ShowErrorTemplate">
-                    <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}"  VerticalAlignment="Center"/>
+                    <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}" Foreground="{Binding ErrorColor}" ToolTip="{Binding ErrorDetail}" VerticalAlignment="Center"/>
                 </DataTemplate>
             </Grid.Resources>
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="85"/>
+                    <RowDefinition Height="100"/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="0" Background="{Binding BackgroundColor}">
                     <StackPanel Background="{Binding BackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Button Name="_btnSavePreset" Click="BtnSavePreset" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0">
+                        <Button Name="_btnSavePreset" Click="BtnSavePreset" ToolTip="Save Preset to File"
+                                Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0">
                             <materialDesign:PackIcon  Kind="ContentSave" Width="24" Height="24"/>
                         </Button>
                         <Separator />
                         <Label Content="Preset: " Foreground="{Binding ForegroundColor}" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <Label Name="_LabelPreset" Foreground="{Binding ForegroundColor}" Content="{Binding PresetName}" FontWeight="DemiBold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FlowDirection="RightToLeft" Width="135"/>
+                        <Label Name="_LabelPreset" ToolTip="Show Preset Name" Foreground="{Binding ForegroundColor}" Content="{Binding PresetName}" FontWeight="DemiBold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FlowDirection="RightToLeft" Width="135"/>
                         <Separator/>
-                        <Button Name="_btnLoadFilePreset"  Click="BtnLoadPreset" Style="{StaticResource MaterialDesignFlatButton }">
+                        <Button Name="_btnLoadFilePreset"  Click="BtnLoadPreset" ToolTip="Load Preset From File"
+                                Style="{StaticResource MaterialDesignFlatButton }">
                             <materialDesign:PackIcon  Kind="OpenInBrowser" Width="24" Height="24"/>
                         </Button>
                     </StackPanel>
                     <Separator/>
                     <StackPanel Background="{Binding BackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Button Name="_btnAddFunc" Click="BtnAddFunc" Style="{StaticResource MaterialDesignFlatButton}">
+                        <Button Name="_btnAddFunc" Click="BtnAddFunc" ToolTip="Add Method"
+                                Style="{StaticResource MaterialDesignFlatButton}">
                             <materialDesign:PackIcon  Kind="BriefcasePlus" Width="24" Height="24"/>
                         </Button>
                         <Separator/>
-                        <Button Name="_btnUpFunc" Click="BtnUpFunc" Style="{StaticResource MaterialDesignFlatButton}" >
+                        <Button Name="_btnUpFunc" Click="BtnUpFunc" ToolTip="Move Up Selected Method"
+                                Style="{StaticResource MaterialDesignFlatButton}" >
                             <materialDesign:PackIcon  Kind="ArrowUpBoldBox" Width="24" Height="24"/>
                         </Button>
-                        <Button Name="_btnDownFunc" Click="BtnDownFunc" Style="{StaticResource MaterialDesignFlatButton}" >
+                        <Button Name="_btnDownFunc" Click="BtnDownFunc" ToolTip="Move Down Selected Method"
+                                Style="{StaticResource MaterialDesignFlatButton}" >
                             <materialDesign:PackIcon  Kind="ArrowDownBoldBox" Width="24" Height="24"/>
                         </Button>
                         <Separator/>
-                        <Button Name="_btnStartBatch" Click="BtnStartBatch"
-                                    Width="70" Style="{StaticResource MaterialDesignFlatButton}">
+                        <Button Name="_btnStartBatch" Click="BtnStartBatch" ToolTip="Start Batch"
+                                    Width="90" Style="{StaticResource MaterialDesignFlatButton}">
                             <materialDesign:PackIcon VerticalAlignment="Center" Kind="PlayArrow" Width="40" Height="35"/>
                         </Button>
+                        <CheckBox Name="_checkboxSkipfile" Width="80" ToolTip="Skip File If Duplicate">
+                            <TextBlock Text="Skip If Duplicate" Foreground="{Binding ForegroundColor}" FontWeight="DemiBold" TextWrapping="Wrap"/>
+                        </CheckBox>
                     </StackPanel>
                     <Separator/>
+                    <TextBlock Text="List Actions" Margin="0,5,0,0" Foreground="{Binding ForegroundColor}" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
                 </StackPanel>
                 <ListView Grid.Column="0" Grid.Row="1" Name="listView" BorderThickness="3" BorderBrush="Gray"
-                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" ToolTip="Actions List" >
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Border Name="_border" OpacityMask="LightCyan" Width="auto" Margin="0,-4,0,-4"
                                 Background="{Binding Path=BackgroundfuncColor,ElementName=batchrename}"
-                                BorderThickness="2" CornerRadius="5">
+                                BorderThickness="3" CornerRadius="5">
                                 <Border.Effect>
                                     <DropShadowEffect  Direction="210" ShadowDepth="2"  Color="{Binding Path=ShadowColor, ElementName=batchrename}"/>
                                 </Border.Effect>
@@ -328,15 +338,15 @@
             </TabControl>
             <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="230,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="35">
                 <Button Name="_btnAdd" Style="{StaticResource MaterialDesignFlatButton}"
-                        Click="BtnAdd_Click" >
+                        Click="BtnAdd_Click" ToolTip="Add File/Folder From Folder">
                     <materialDesign:PackIcon  Kind="FilePlus" Width="24" Height="24"/>
                 </Button>
                 <Separator />
                 <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}"
-                        Click="BtnRemove_Click" >
+                        Click="BtnRemove_Click" ToolTip="Remove File/Folder From List">
                     <materialDesign:PackIcon  Kind="FileRemove" Width="24" Height="24"/>
                 </Button>
-                <ToggleButton Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" Click="BtnColorMode_Click" Height="30" Width="50" ToolTip="Color Mode">
+                <ToggleButton ToolTip="Dark Mode/Light Mode" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" Click="BtnColorMode_Click" Height="30" Width="50">
                     <materialDesign:PackIcon Kind="LightbulbOn" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <materialDesign:ToggleButtonAssist.OnContent>
                         <materialDesign:PackIcon Kind="Lightbulb" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>

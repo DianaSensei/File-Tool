@@ -117,42 +117,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Images\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\icon_app.png" />
-    <Resource Include="Icons\icon_bottom.png" />
-    <Resource Include="Icons\icon_clear.png" />
-    <Resource Include="Icons\icon_down.png" />
-    <Resource Include="Icons\icon_help.png" />
-    <Resource Include="Icons\icon_new.png" />
-    <Resource Include="Icons\icon_play.png" />
-    <Resource Include="Icons\icon_refresh_16.png" />
-    <Resource Include="Icons\icon_save.png" />
-    <Resource Include="Icons\icon_top.png" />
-    <Resource Include="Icons\icon_up.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\icon_property.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\icon_property1.png" />
-    <Resource Include="Icons\icon_property2.png" />
-    <Resource Include="Icons\icon_property3.png" />
-    <Resource Include="Icons\icon_property4.png" />
-    <Resource Include="Icons\icon_property5.png" />
-    <Resource Include="Icons\icon_property6.png" />
-    <Resource Include="Icons\icon_property7.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\icon_add.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\refresh_30px.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\icon_openfile.png" />
+    <Resource Include="Icons\icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

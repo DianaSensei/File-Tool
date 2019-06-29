@@ -13,14 +13,12 @@ namespace File_Tool
     public interface IActions
     {
         IArgs Args { get; set; }
-
         /// <summary>
         /// Hàm xử lí chuỗi
         /// </summary>
         /// <param name="origin">Chuỗi gốc</param>
         /// <returns>Kết quả sau khi xử lí</returns>
         string Process(string origin);
-
         /// <summary>
         ///  Mô tả về hành động
         /// </summary>
@@ -311,7 +309,6 @@ namespace File_Tool
             }
         }
     }
-
     public class UniqueName : IActions, INotifyPropertyChanged
     {
         public IArgs Args { get; set; }

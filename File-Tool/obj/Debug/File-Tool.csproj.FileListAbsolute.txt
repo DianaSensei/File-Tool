@@ -25,7 +25,6 @@ C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\Fi
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\File-Tool.exe
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\File-Tool.pdb
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Debug\Serilog.Sinks.File.pdb
-C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\File-Tool.csprojAssemblyReference.cache
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\SelectFunctionWindow.g.cs
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Debug\SelectFunctionWindow.baml
 C:\Users\Cow\Documents\GitHub\File-Tool\File-Tool\bin\Debug\File-Tool.exe.config
