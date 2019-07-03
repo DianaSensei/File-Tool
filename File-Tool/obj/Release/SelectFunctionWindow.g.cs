@@ -119,7 +119,7 @@ namespace File_Tool {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/File-Tool;component/selectfunctionwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Batch Rename;component/selectfunctionwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\SelectFunctionWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

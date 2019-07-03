@@ -145,8 +145,8 @@ namespace File_Tool
             int type = args.Modes;
             var result = filename;
             string g_isbn = "", g_filename = "";
-            string regex_I_F = @"(?<isbn>[0-9_-]{1,})[ ](?<filename>[a-zA-Z ,]{1,})";
-            string regex_F_I = @"(?<filename>[a-zA-Z ,]{1,})[ ](?<isbn>[0-9_-]{1,})";
+            string regex_I_F = @"(?<isbn>^[0-9_-]{1,})[ ](?<filename>[a-zA-Z ,]{1,}$)";
+            string regex_F_I = @"(?<filename>^[a-zA-Z ,]{1,})[ ](?<isbn>[0-9_-]{1,}$)";
 
             switch (type)
             {

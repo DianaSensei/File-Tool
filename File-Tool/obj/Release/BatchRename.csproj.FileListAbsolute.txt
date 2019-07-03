@@ -1,0 +1,29 @@
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Batch Rename.exe.config
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Batch Rename.exe
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Batch Rename.pdb
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\MaterialDesignColors.dll
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\MaterialDesignThemes.Wpf.dll
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Serilog.dll
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Serilog.Sinks.File.dll
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\MaterialDesignColors.pdb
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\MaterialDesignThemes.Wpf.pdb
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\MaterialDesignThemes.Wpf.xml
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Serilog.pdb
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Serilog.xml
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Serilog.Sinks.File.pdb
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\bin\Release\Serilog.Sinks.File.xml
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\MainWindow.g.cs
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\SelectFunctionWindow.g.cs
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\App.g.cs
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename_MarkupCompile.cache
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename_MarkupCompile.lref
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\App.baml
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\MainWindow.baml
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\SelectFunctionWindow.baml
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename.g.resources
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\File_Tool.Properties.Resources.resources
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\BatchRename.csproj.GenerateResource.cache
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\BatchRename.csproj.CoreCompileInputs.cache
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\BatchRename.csproj.CopyComplete
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename.exe
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename.pdb
