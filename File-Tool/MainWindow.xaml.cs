@@ -298,6 +298,7 @@ namespace BatchRename
                     }
                     CloseCompleteDialog();
                     folderList.Clear();
+                    FolderShow.UpdateLayout();
                 }
             }
         }
@@ -438,12 +439,14 @@ namespace BatchRename
                 {
                     Debug.WriteLine("Remove item: " + (FileShow.SelectedItems[i] as m_File).FileName);
                     fileList.Remove(FileShow.SelectedItems[i] as m_File);
+                    TotalItem--;
                 }
             else if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
                 for (int i = FolderShow.SelectedItems.Count - 1; i >= 0; i--)
                 {
                     Debug.WriteLine("Remove item: " + (FolderShow.SelectedItems[i] as m_Folder).FolderName);
                     folderList.Remove(FolderShow.SelectedItems[i] as m_Folder);
+                    TotalItem--;
                 }
         }
         #endregion
