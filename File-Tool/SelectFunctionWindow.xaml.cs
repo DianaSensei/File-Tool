@@ -213,7 +213,7 @@ namespace File_Tool
         {
             if (_comboboxSelect.SelectedIndex == 0)
             {
-                if (!Needle.Any() || !Hammer.Any()) return;
+                if (!Needle.Any())return;
                 mainWindow.actions.Add(new Replacer() { Args = new ReplaceArgs() { Needle = this.Needle, Hammer = this.Hammer } });
             }
             if (_comboboxSelect.SelectedIndex == 1)

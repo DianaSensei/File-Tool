@@ -284,6 +284,7 @@ namespace BatchRename
                     }
                     CloseCompleteDialog();
                     fileList.Clear();
+                    FileShow.UpdateLayout();
                 }
             }
             else
@@ -302,11 +303,15 @@ namespace BatchRename
         }
         private void HandleFile(m_File victim)
         {
-            if (victim.FileName == victim.NewName)
+            if (victim.FileName.Equals(victim.NewName,StringComparison.CurrentCultureIgnoreCase))
             {
                 if (!victim.FileName.Equals(victim.NewName))
+                {
                     if(File.Exists(victim.FullPath))
+                    {
                         File.Move(victim.FullPath, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                    }
+                }
                 return;
             }
             var path = PathHandler.getPath(victim.FullPath);
@@ -345,15 +350,20 @@ namespace BatchRename
         }
         private void HandleFolder(m_Folder victim)
         {
-            if (victim.FolderName == victim.NewName)
+            if (victim.FolderName.Equals(victim.NewName,StringComparison.CurrentCultureIgnoreCase))
             {
                 if (!victim.FolderName.Equals(victim.NewName))
                 {
-                    if(Directory.Exists(victim.FullPath))
-                        Directory.Move(victim.FullPath, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                    if (Directory.Exists(victim.FullPath))
+                    {
+                        var tempfolder = PathHandler.getPath(victim.FullPath) + "\\" + System.Guid.NewGuid().ToString();
+                        Directory.Move(victim.FullPath, tempfolder);
+                        Directory.Move(tempfolder, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                    }
                 }
                 return;
             }
+            Console.WriteLine("Not same");
             var path = PathHandler.getPath(victim.FullPath);
             var oldname = victim.FolderName;
             var newname = victim.NewName;

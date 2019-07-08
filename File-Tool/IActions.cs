@@ -77,8 +77,8 @@ namespace File_Tool
                 string types="";
                 if (type == 0) types = "To UpperCase";
                 if (type == 1) types = "To LowerCase";
-                if (type == 2) types = "To LetterCase ";
-                var result = $"NewCase with \"{types}\"";
+                if (type == 2) types = "Capitalize Each Word ";
+                var result = $"NewCase \"{types}\"";
                 return result;
             }
         }

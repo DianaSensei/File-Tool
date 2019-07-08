@@ -27,3 +27,4 @@ C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\Fi
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\BatchRename.csproj.CopyComplete
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename.exe
 C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\Batch Rename.pdb
+C:\Users\Systemcall\OneDrive - VNU-HCMUS\Source\Windows Programming\Project 1\File-Tool\File-Tool\obj\Release\BatchRename.csprojAssemblyReference.cache

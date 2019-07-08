@@ -76,19 +76,19 @@
                     <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="FormatUppercase" Width="24" Height="24" VerticalAlignment="Center"/>
-                            <Label Content="To UpperCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                            <Label Content="UpperCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="FormatLowercase" Width="24" Height="24" VerticalAlignment="Center"/>
-                            <Label Content="To LowerCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                            <Label Content="LowerCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ComboBoxItem>
                     <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Kind="FormatLetterCaseUpper" Width="24" Height="24" VerticalAlignment="Center"/>
-                            <Label Content="To LetterCase Upper" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                            <Label Content="Capitalize Each Word" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ComboBoxItem>
                 </ComboBox>
