@@ -1,0 +1,129 @@
+﻿<Window x:Class="File_Tool.SelectFunctionWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+        xmlns:local="clr-namespace:File_Tool"
+        mc:Ignorable="d"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="CenterScreen"
+        Loaded="Window_Loaded" Name="selectfunc"
+        Title="Function" FontWeight="DemiBold" Height="350" Width="400">
+    <Grid Background="{Binding Path=BackgroundColor,ElementName=selectfunc}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="250"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Name="_stackpanelParent" Background="{Binding Path=BackgroundColor,ElementName=selectfunc}">
+            <TextBlock Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" VerticalAlignment="Center" Margin="50,10" HorizontalAlignment="Stretch" FontWeight="DemiBold" FontSize="20" Text="Function"/>
+            <ComboBox Name="_comboboxSelect" Loaded="ComboboxSelect_Loaded" 
+                      materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                      Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                      Margin="50,20" Height="35" SelectionChanged="ComboBox_SelectionChanged">
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FindReplace" Foreground="ForestGreen" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="Replace" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem>
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FormatUppercase" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="NewCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem >
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="KeyRemove" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="Move" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem>
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Ornament" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="Fullname Normalize" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"  Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem>
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="OneUp" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="Unique Name" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem>
+                <ComboBoxItem Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Extension" Width="24" Height="24" VerticalAlignment="Center"/>
+                        <Label Content="Change Extension" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </ComboBoxItem>
+            </ComboBox>
+            <StackPanel Name="_stackpanelParameterReplace">
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding Needle}" 
+                         Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                         materialDesign:HintAssist.Hint="Find What"
+                         HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding Hammer}" 
+                         Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                         materialDesign:HintAssist.Hint="Replace By"
+                         HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
+            </StackPanel>
+            <StackPanel Name="_stackpanelParameterNewCase">
+                <ComboBox Margin="50,15,50,0" Height="35" SelectedIndex="{Binding Case}" 
+                          materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                          Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                          materialDesign:HintAssist.Hint="Type">
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FormatUppercase" Width="24" Height="24" VerticalAlignment="Center"/>
+                            <Label Content="UpperCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FormatLowercase" Width="24" Height="24" VerticalAlignment="Center"/>
+                            <Label Content="LowerCase" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="FormatLetterCaseUpper" Width="24" Height="24" VerticalAlignment="Center"/>
+                            <Label Content="Capitalize Each Word" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Name="_stackpanelParameterMove">
+                <ComboBox Margin="50,15,50,0" Height="35" SelectedIndex="{Binding Modes}" 
+                          materialDesign:ComboBoxAssist.ShowSelectedItem="True"
+                          Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                          materialDesign:HintAssist.Hint="Type">
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="IBSN - Filename" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                    <ComboBoxItem  Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Filename - IBSN" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Height="35" FontSize="15" FontWeight="DemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Name="_stackpanelParameterExtension">
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding oldExt}" 
+                         Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                         materialDesign:HintAssist.Hint="Change Extention from"
+                         HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
+                <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}" Text="{Binding newExt}" 
+                         Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}"
+                         materialDesign:HintAssist.Hint="Change Extention to"
+                         HorizontalContentAlignment="Center" Margin="50,15,50,0"/>
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" Grid.Row="1">
+            <Button Content="Cancel" Grid.Row="1" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Width="80" Click="BtnCancelFunction_Click" Margin="30,0,30,0"/>
+            <Button Name ="_btnFunction" Foreground="{Binding Path=ForegroundColor,ElementName=selectfunc}" Content="Add" Grid.Row="1" Width="80" Click="BtnFunction_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

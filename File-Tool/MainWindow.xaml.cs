@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿#region lib
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,109 +18,143 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using File_Tool;
+using System.Diagnostics;
+using MaterialDesignThemes.Wpf;
+using System.Windows.Controls.Primitives;
+using System.Text.RegularExpressions;
+
+#endregion
 
 namespace BatchRename
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
         #region Attributes
-        private int newCaseType;
-        #region NewCase Status
-        public bool IsNewCase
+        public string regex_check_filename_index = @"(?<filename>[\(,\),_,\-,.,\w+]{1,})(?<indextag>\((?<index>\d+)\)$)";
+        System.Timers.Timer timer = new System.Timers.Timer(1000);
+
+        public const string PresetKey = "batchpreset17clc3";
+        private int totalitem;
+        private string presetName = "Default";
+        private string process = "";
+        //  Color mode
+        private string foregroundColor = "Black";
+        private string backgroundColor = "#f5f5f5";
+        private string backgroundfuncColor = "White";
+        private string shadowColor = "LightGray";
+        private string backgroundtabitemColor = "#f5f5f5";
+        #endregion
+
+        #region List manager
+        BindingList<m_File> fileList = new BindingList<m_File>();
+        BindingList<m_Folder> folderList = new BindingList<m_Folder>();
+        public BindingList<IActions> actions = new BindingList<IActions>();
+        #endregion
+
+        #region PropertyChanged value
+        public event PropertyChangedEventHandler PropertyChanged;
+        void RaiseChangeEvent([CallerMemberName]string propertyName = "")
         {
-            get { return (bool)GetValue(IsNewCaseProperty); }
-            set { SetValue(IsNewCaseProperty, value); }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        // Using a DependencyProperty as the backing store for 
-        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsNewCaseProperty =
-            DependencyProperty.Register("IsNewCase", typeof(bool),
-            typeof(MainWindow), new UIPropertyMetadata(false));
-        #endregion
-        private string moveString;
-        #region Move Status
-        public bool IsMove
+        public int TotalItem
         {
-            get { return (bool)GetValue(IsMoveProperty); }
-            set { SetValue(IsMoveProperty, value); }
-        }
-        // Using a DependencyProperty as the backing store for 
-        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsMoveProperty =
-            DependencyProperty.Register("IsMove", typeof(bool),
-            typeof(MainWindow), new UIPropertyMetadata(false));
-        #endregion
-        #region FullnameNomalize Status
-        public bool IsFullnameNomalize
-        {
-            get { return (bool)GetValue(IsFullnameNomalizeProperty); }
-            set { SetValue(IsFullnameNomalizeProperty, value); }
-        }
-        // Using a DependencyProperty as the backing store for 
-        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsFullnameNomalizeProperty =
-            DependencyProperty.Register("IsFullnameNomalize", typeof(bool),
-            typeof(MainWindow), new UIPropertyMetadata(false));
-        #endregion
-        private string findString;
-        private string replaceString;
-        #region Replace Status
-        public bool IsReplace
-        {
-            get { return (bool)GetValue(IsReplaceProperty); }
-            set { SetValue(IsReplaceProperty, value); }
-        }
-        // Using a DependencyProperty as the backing store for 
-        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsReplaceProperty =
-            DependencyProperty.Register("IsReplace", typeof(bool),
-            typeof(MainWindow), new UIPropertyMetadata(false));
-        #endregion
-        #region UniqueName Status
-        public bool IsUniqueName
-        {
-            get { return (bool)GetValue(IsUniqueNameProperty); }
-            set { SetValue(IsUniqueNameProperty, value); }
-        }
-        // Using a DependencyProperty as the backing store for 
-        //IsCheckBoxChecked.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty IsUniqueNameProperty =
-            DependencyProperty.Register("IsUniqueName", typeof(bool),
-            typeof(MainWindow), new UIPropertyMetadata(false));
-        #endregion
-        #endregion
-        public class ObservableHashSetCollection<T> : ObservableCollection<T>
-        {
-            public Boolean AddUnique(T item)
+            get
             {
-                if (Contains(item))
-                    return false;
-                base.Add(item);
-                return true;
+                if (_tabcontrolShow.SelectedIndex == 1) return folderList.Count;
+                return fileList.Count;
+            }
+            set
+            {
+                totalitem = value;
+                RaiseChangeEvent("TotalItem");
             }
         }
-        /// <summary>
-        /// Array file
-        /// </summary>
+        public string Process { get => process;
+            set
+            {
+                process = value;
+                RaiseChangeEvent("Process");
+            }
+        }
+        public string PresetName
+        {
+            get => presetName; set
+            {
+                presetName = value;
+                RaiseChangeEvent("PresetName");
+            }
+        }
+        public string ForegroundColor
+        {
+            get => foregroundColor;
+            set
+            {
+                foregroundColor = value;
+                RaiseChangeEvent("ForegroundColor");
+            }
+        }
+        public string BackgroundColor
+        {
+            get => backgroundColor;
+            set
+            {
+                backgroundColor = value;
+                RaiseChangeEvent("BackgroundColor");
+            }
+        }
+        public string BackgroundfuncColor
+        {
+            get => backgroundfuncColor;
+            set
+            {
+                backgroundfuncColor = value;
+                RaiseChangeEvent("BackgroundfuncColor");
+            }
+        }
+        public string ShadowColor
+        {
+            get => shadowColor;
+            set
+            {
+                shadowColor = value;
+                RaiseChangeEvent("ShadowColor");
+            }
+        }
+        public string BackgroundtabitemColor
+        {
+            get => backgroundtabitemColor;
+            set
+            {
+                backgroundtabitemColor = value;
+                RaiseChangeEvent("BackgroundtabitemColor");
+            }
+        }
+        #endregion
 
-        ObservableCollection<File> fileList = new ObservableCollection<File>();
-
-        /// <summary>
-        /// Array Folder
-        /// </summary>
-        ObservableCollection<Folder> folderList = new ObservableCollection<Folder>();
         #region File and Folder Class
-        public class File : INotifyPropertyChanged
+        public class m_File : INotifyPropertyChanged
         {
             private string newName;
-            private string error;
             private string errorStatus;
-            private FileInfo _FileInfomation;
-            public FileInfo FileInfomation
+            private string filename;
+            private string fullpath;
+            private string errordetail;
+            private string errorColor;
+            public string FileName
             {
-                get => _FileInfomation; set
+                get => filename; set
                 {
-                    _FileInfomation = value;
+                    filename = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string FullPath
+            {
+                get => fullpath; set
+                {
+                    fullpath = value;
                     RaiseChangeEvent();
                 }
             }
@@ -131,14 +166,6 @@ namespace BatchRename
                     RaiseChangeEvent();
                 }
             }
-            public string Error
-            {
-                get => error; set
-                {
-                    error = value;
-                    RaiseChangeEvent();
-                }
-            }
             public string ErrorStatus
             {
                 get => errorStatus; set
@@ -147,25 +174,50 @@ namespace BatchRename
                     RaiseChangeEvent();
                 }
             }
-
+            public string ErrorDetail
+            {
+                get => errordetail;
+                set
+                {
+                    errordetail = value;
+                    RaiseChangeEvent("ErrorDetail");
+                }
+            }
+            public string ErrorColor { get => errorColor;set
+                {
+                    errorColor = value;
+                    RaiseChangeEvent("ErrorColor");
+                }
+            }
+            #region PropertyChange
             public event PropertyChangedEventHandler PropertyChanged;
             void RaiseChangeEvent([CallerMemberName]string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
-
+            #endregion
         }
-        public class Folder : INotifyPropertyChanged
+        public class m_Folder : INotifyPropertyChanged
         {
             private string newName;
-            private string error;
             private string errorStatus;
-            private DirectoryInfo _FolderInfomation;
-            public DirectoryInfo FolderInfomation
+            private string foldername;
+            private string fullpath;
+            private string errordetail;
+            private string errorColor;
+            public string FolderName
             {
-                get => _FolderInfomation; set
+                get => foldername; set
                 {
-                    _FolderInfomation = value;
+                    foldername = value;
+                    RaiseChangeEvent();
+                }
+            }
+            public string FullPath
+            {
+                get => fullpath; set
+                {
+                    fullpath = value;
                     RaiseChangeEvent();
                 }
             }
@@ -177,14 +229,6 @@ namespace BatchRename
                     RaiseChangeEvent();
                 }
             }
-            public string Error
-            {
-                get => error; set
-                {
-                    error = value;
-                    RaiseChangeEvent();
-                }
-            }
             public string ErrorStatus
             {
                 get => errorStatus; set
@@ -193,219 +237,174 @@ namespace BatchRename
                     RaiseChangeEvent();
                 }
             }
-
+            public string ErrorDetail
+            {
+                get => errordetail;
+                set
+                {
+                    errordetail = value;
+                    RaiseChangeEvent("ErrorDetail");
+                }
+            }
+            public string ErrorColor
+            {
+                get => errorColor; set
+                {
+                    errorColor = value;
+                    RaiseChangeEvent("ErrorColor");
+                }
+            }
+            #region PropertyChange
             public event PropertyChangedEventHandler PropertyChanged;
             void RaiseChangeEvent([CallerMemberName]string propertyName = "")
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
-
+            #endregion
         }
         #endregion
 
         public MainWindow()
         {
             InitializeComponent();
-            //this.DataContext = this;
+            listView.ItemsSource = actions;
+            this.DataContext = this;
         }
-
-        #region PreLoad Resource
-        private void ToolBar_Loaded(object sender, RoutedEventArgs e)
-        {
-            ToolBar toolBar = sender as ToolBar;
-            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
-            if (overflowGrid != null)
-            {
-                overflowGrid.Visibility = Visibility.Collapsed;
-            }
-            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
-            if (mainPanelBorder != null)
-            {
-                mainPanelBorder.Margin = new Thickness();
-            }
-        }
-        private void ComboBox_Load(object sender, RoutedEventArgs e)
-        {
-            _comboboxPreset.Items.Add("Default");
-            _comboboxPreset.SelectedIndex = 0;
-        }
-        /// <summary>
-        /// Help -> Show About
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ShowAbout(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Design by Thong", "About");
-        }
-        /// <summary>
-        /// Help -> Help
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Help(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("You can do it.", "Help");
-        }
-        #endregion
-
-        #region Item Navigation
-        private void MenuItem_Tab_Top(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    fileList.Remove((File)FileShow.SelectedItem);
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    folderList.Move(FolderShow.SelectedIndex, 0);
-                }
-            }
-        }
-        private void MenuItem_Tab_Bottom(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    //fileList.Move(FileShow.SelectedIndex, fileList.Count-1);
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    folderList.Move(FolderShow.SelectedIndex, folderList.Count - 1);
-                }
-            }
-        }
-        private void MenuItem_Tab_Down(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    if (FileShow.SelectedIndex < fileList.Count)
-                    {
-                        {
-                            //fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex + 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    if (FolderShow.SelectedIndex < folderList.Count)
-                    {
-                        {
-                            folderList.Move(FolderShow.SelectedIndex, FolderShow.SelectedIndex + 1);
-                        }
-                    }
-                }
-            }
-        }
-        private void MenuItem_Tab_Up(object sender, RoutedEventArgs e)
-        {
-            if (_tabcontrolShow.SelectedIndex == 0)
-            {
-                if (fileList.Count > 0)
-                {
-                    if (FileShow.SelectedIndex != 0)
-                    {
-                        {
-                            // fileList.Move(FileShow.SelectedIndex, FileShow.SelectedIndex - 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (folderList.Count > 0)
-                {
-                    if (FolderShow.SelectedIndex != 0)
-                    {
-                        {
-                            folderList.Move(FolderShow.SelectedIndex, FolderShow.SelectedIndex - 1);
-                        }
-                    }
-                }
-            }
-        }
-        #endregion
 
         private void BtnStartBatch(object sender, RoutedEventArgs e)
         {
-
-
-
-        }
-        /// <summary>
-        /// Refresh UI&Data
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void BtnRefresh(object sender, RoutedEventArgs e)
-        {
-            _comboboxPreset.SelectedIndex = 0;
-            fileList.Clear();
-            folderList.Clear();
-        }
-
-        #region Method
-        private void BtnNewCase(object sender, RoutedEventArgs e)
-        {
-            if (_btnNewCase.IsChecked == true)
+            if (_tabcontrolShow.SelectedIndex == 0)
             {
-                this._stackPanel_NewCase.Children.Add(_comboboxNewCase);
-              
+                if (fileList.Any() && actions.Any())
+                {
+                    ShowCompleteDialog();
+                    foreach (var victim in fileList)
+                    {
+                        HandleFile(victim);
+                    }
+                    CloseCompleteDialog();
+                    fileList.Clear();
+                    FileShow.UpdateLayout();
+                }
             }
             else
             {
-                _comboboxNewCase.SelectedIndex = -1;
-                this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
-                foreach (var element in fileList)
-                    element.NewName = element.FileInfomation.Name;
+                if (folderList.Any() && actions.Any())
+                {
+                    ShowCompleteDialog();
+                    foreach (var victim in folderList)
+                    {
+                        HandleFolder(victim);
+                    }
+                    CloseCompleteDialog();
+                    folderList.Clear();
+                    FolderShow.UpdateLayout();
+                }
             }
         }
-        private void BtnReplace(object sender, RoutedEventArgs e)
+        private void HandleFile(m_File victim)
         {
-            if (_btnReplace.IsChecked == true)
+            if (victim.FileName.Equals(victim.NewName,StringComparison.CurrentCultureIgnoreCase))
             {
-                this._stackPanel_Replace.Children.Add(_stackPanelReplace);
+                if (!victim.FileName.Equals(victim.NewName))
+                {
+                    if(File.Exists(victim.FullPath))
+                    {
+                        File.Move(victim.FullPath, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                    }
+                }
+                return;
             }
-            else
-            {
-                this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-            }
-        }
-        private void BtnMove(object sender, RoutedEventArgs e)
-        {
-            if (_btnMove.IsChecked == true)
-            {
-                this._stackPanel_Move.Children.Add(_stackPanelMove);
-            }
-            else
-            {
-                this._stackPanel_Move.Children.Remove(_stackPanelMove);
-            }
-        }
-        private void BtnFullName(object sender, RoutedEventArgs e)
-        {
+            var path = PathHandler.getPath(victim.FullPath);
+            var oldname = victim.FileName;
 
+            var newname = PathHandler.getFileName(victim.NewName);
+            var newext = PathHandler.getExtension(victim.NewName);
+
+            int count;
+            var result = newname;
+            var temp = result;
+            if (Regex.IsMatch(result, regex_check_filename_index))
+            {
+                Console.WriteLine("Matching!");
+                Match match = Regex.Match(result, regex_check_filename_index);
+                count = int.Parse(match.Groups["index"].Value);
+                Console.WriteLine(count);
+                result = match.Groups["filename"].Value;
+                Console.WriteLine("Filename: " + result);
+                temp = result;
+            }
+            else count = 1;
+            while (File.Exists(PathHandler.combinePath(path, result, newext)))
+            {
+                if (_checkboxSkipfile.IsChecked == true)
+                    return;
+                result = $"{temp}({++count})";
+            }
+            Debug.WriteLine(victim.FullPath);
+            if(File.Exists(victim.FullPath))
+            {
+                string str = PathHandler.combinePath(path, result, newext);
+                Process = $"Rename: {victim.FullPath} to {str}";
+                File.Move(victim.FullPath, str);
+            }
         }
-        private void BtnUnique(object sender, RoutedEventArgs e)
+        private void HandleFolder(m_Folder victim)
         {
+            if (victim.FolderName.Equals(victim.NewName,StringComparison.CurrentCultureIgnoreCase))
+            {
+                if (!victim.FolderName.Equals(victim.NewName))
+                {
+                    if (Directory.Exists(victim.FullPath))
+                    {
+                        var tempfolder = PathHandler.getPath(victim.FullPath) + "\\" + System.Guid.NewGuid().ToString();
+                        Directory.Move(victim.FullPath, tempfolder);
+                        Directory.Move(tempfolder, PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName);
+                    }
+                }
+                return;
+            }
+            Console.WriteLine("Not same");
+            var path = PathHandler.getPath(victim.FullPath);
+            var oldname = victim.FolderName;
+            var newname = victim.NewName;
 
+            int count;
+            var result = newname;
+            var temp = result;
+            if (Regex.IsMatch(result, regex_check_filename_index))
+            {
+                Console.WriteLine("Matching!");
+                Match match = Regex.Match(result, regex_check_filename_index);
+                count = int.Parse(match.Groups["index"].Value);
+                Console.WriteLine(count);
+                result = match.Groups["filename"].Value;
+                Console.WriteLine("Filename: " + result);
+                temp = result;
+            }
+            else count = 1;
+            while (Directory.Exists(PathHandler.combinePath(path, result, "")))
+            {
+                if (_checkboxSkipfile.IsChecked == true)
+                    return;
+                result = $"{temp}({++count})";
+            }
+            if(Directory.Exists(victim.FullPath))
+            {
+                string str = PathHandler.combinePath(path, result, "");
+                Process = $"Rename: {victim.FullPath} to {str}";
+                Directory.Move(victim.FullPath, PathHandler.combinePath(path, result, ""));
+            }
         }
-        #endregion
-
+        #region Add & Remove Button
+        private void BtnAddFunc(object sender, RoutedEventArgs e)
+        {
+            SelectFunctionWindow selectfunctionwd = new SelectFunctionWindow(this);
+            selectfunctionwd.ShowDialog();
+            if (_tabcontrolShow.SelectedIndex == 0)
+                UpdateNewName("file");
+            else UpdateNewName("folder");
+        }
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             if (_tabcontrolShow.SelectedIndex == 0)
@@ -436,11 +435,24 @@ namespace BatchRename
         private void BtnRemove_Click(object sender, RoutedEventArgs e)
         {
             if (FileShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 0)
-                fileList.RemoveAt(FileShow.SelectedIndex);
-            if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
-                folderList.RemoveAt(FolderShow.SelectedIndex);
+                for (int i = FileShow.SelectedItems.Count - 1; i >= 0; i--)
+                {
+                    Debug.WriteLine("Remove item: " + (FileShow.SelectedItems[i] as m_File).FileName);
+                    fileList.Remove(FileShow.SelectedItems[i] as m_File);
+                    TotalItem--;
+                }
+            else if (FolderShow.SelectedIndex != -1 && _tabcontrolShow.SelectedIndex == 1)
+                for (int i = FolderShow.SelectedItems.Count - 1; i >= 0; i--)
+                {
+                    Debug.WriteLine("Remove item: " + (FolderShow.SelectedItems[i] as m_Folder).FolderName);
+                    folderList.Remove(FolderShow.SelectedItems[i] as m_Folder);
+                    TotalItem--;
+                }
         }
-        private Boolean LoadFileFromPath(string RootPath)
+        #endregion
+
+        #region Load File & Folder
+        private void LoadFileFromPath(string RootPath)
         {
             DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
             if (FolderPath.Exists)
@@ -448,13 +460,15 @@ namespace BatchRename
                 FileInfo[] listFileInfo = FolderPath.GetFiles();
                 foreach (var file in listFileInfo)
                 {
-                    fileList.Add(new File() { FileInfomation = file, NewName = file.Name, ErrorStatus = "ChartDonut" });
+                    var m_file = new m_File() { FileName = file.Name, FullPath = file.FullName, NewName = file.Name, ErrorStatus = "ChartDonut" };
+                    if (CheckExitsInFileList(m_file)) continue;
+                    fileList.Add(m_file);
+                    UpdateNewName("file");
+                    TotalItem++;
                 }
-                return true;
             }
-            return false;
         }
-        private Boolean LoadFolderFromPath(string RootPath)
+        private void LoadFolderFromPath(string RootPath)
         {
             DirectoryInfo FolderPath = new DirectoryInfo(RootPath);
             if (FolderPath.Exists)
@@ -462,78 +476,347 @@ namespace BatchRename
                 DirectoryInfo[] listFolderInfo = FolderPath.GetDirectories();
                 foreach (var folder in listFolderInfo)
                 {
-                    folderList.Add(new Folder() { FolderInfomation = folder, NewName = folder.Name, ErrorStatus = "ChartDonut" });
+                    var m_foler = new m_Folder() { FolderName = folder.Name, FullPath = folder.FullName, NewName = folder.Name, ErrorStatus = "ChartDonut" };
+                    if (CheckExitsInFolderList(m_foler)) continue;
+                    folderList.Add(m_foler);
+                    UpdateNewName("folder");
+                    TotalItem++;
                 }
-                return true;
             }
-            return false;
-        }
-
-        #region Preset Method
-        private void BtnNewPreset(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void BtnSavePreset(object sender, RoutedEventArgs e)
-        {
-
-        }
-        private void BtnLoadPreset(object sender, RoutedEventArgs e)
-        {
-
         }
         #endregion
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        #region Other
+        private bool CheckExitsInFileList(m_File item)
         {
-
-            FileShow.ItemsSource = fileList;
-            FolderShow.ItemsSource = folderList;
-
-            ComboBox_Load(sender, new RoutedEventArgs());
-            this._stackPanel_NewCase.Children.Remove(_comboboxNewCase);
-            this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
-            this._stackPanel_Move.Children.Remove(_stackPanelMove);
+            foreach (var items in fileList)
+                if (items.FullPath == item.FullPath)
+                    return true;
+            return false;
         }
-
-        private void _comboboxNewCase_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private bool CheckExitsInFolderList(m_Folder item)
         {
-            if (_comboboxNewCase.SelectedIndex == 0)
+            foreach (var items in folderList)
+                if (items.FullPath == item.FullPath)
+                    return true;
+            return false;
+        }
+        private void UpdateNewName(string Mode)
+        {
+            if (Mode == "file")
             {
-                foreach (var file in fileList)
+                foreach (var victim in fileList)
                 {
-                    file.NewName = file.NewName.ToUpper();
+                    string newName = victim.FullPath;
+                    foreach (var action in actions)
+                    {
+                        newName = action.Process(newName);
+                    }
+                    victim.NewName = PathHandler.getFileName(newName) + PathHandler.getExtension(newName);
+                    if(File.Exists(PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName))
+                    {
+                        victim.ErrorDetail = "File has been exist!";
+                        victim.ErrorStatus = "Error";
+                        victim.ErrorColor = "Red";
+                    }
+                    else
+                    {
+                        victim.ErrorDetail = "OK";
+                        victim.ErrorStatus = "CheckCircle";
+                        victim.ErrorColor = "Green";
+                    }
                 }
-                foreach (var folder in folderList)
-                {
-                    folder.NewName = folder.NewName.ToUpper();
-                }
-
-            }
-            else if (_comboboxNewCase.SelectedIndex == 1)
-            {
-                foreach (var file in fileList)
-                {
-                    file.NewName = file.NewName.ToLower();
-                }
-                foreach (var folder in folderList)
-                {
-                    folder.NewName = folder.NewName.ToLower();
-                }
-
             }
             else
             {
-                foreach (var file in fileList)
+                foreach (var victim in folderList)
                 {
-                    file.NewName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(file.NewName.ToLower());
+                    string newName = victim.FullPath;
+                    foreach (var action in actions)
+                    {
+                        newName = action.Process(newName);
+                    }
+                    victim.NewName = PathHandler.getFileName(newName) + PathHandler.getExtension(newName);
+                    if (Directory.Exists(PathHandler.getPath(victim.FullPath) + "\\" + victim.NewName))
+                    {
+                        victim.ErrorDetail = "Folder has been exist!";
+                        victim.ErrorStatus = "Error";
+                        victim.ErrorColor = "Red";
+                    }
+                    else
+                    {
+                        victim.ErrorDetail = "OK";
+                        victim.ErrorStatus = "CheckCircle";
+                        victim.ErrorColor = "Green";
+                    }
                 }
-                foreach (var folder in folderList)
+            }
+        }
+        private void ShowCompleteDialog()
+        {
+            _dialoghost.CloseOnClickAway = false;
+            _imgCheckProcess.Opacity = 0;
+            _dialoghost.IsOpen = true;
+        }
+        private void CloseCompleteDialog()
+        {
+            timer.Elapsed += Timer_Elapsed;
+            timer.Enabled = true;
+            timer.Start();
+        }
+        #endregion
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                _dialoghost.CloseOnClickAway = true;
+                _imgCheckProcess.Opacity = 1;
+                _processbar.Value = 100;
+                timer.Stop();
+            });
+        }
+        #region Preset Method
+        private void BtnSavePreset(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog SaveFilePresetDialog = new SaveFileDialog();
+            SaveFilePresetDialog.Title = "Save Preset BatchRename";
+            SaveFilePresetDialog.Filter = "Text file(*.txt)|*.txt";
+            SaveFilePresetDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            SaveFilePresetDialog.DefaultExt = "txt";
+            SaveFilePresetDialog.CheckPathExists = true;
+            if (SaveFilePresetDialog.ShowDialog() == true)
+            {
+                SavePreset(SaveFilePresetDialog.FileName);
+            }
+        }
+        private void BtnLoadPreset(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openpresetfile = new OpenFileDialog();
+            openpresetfile.Title = "Open Preset BatchRename";
+            openpresetfile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (openpresetfile.ShowDialog() == true)
+            {
+                if (!LoadPreset(openpresetfile.FileName))
                 {
-                    folder.NewName = System.Threading.Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(folder.NewName.ToLower());
+                    MessageBox.Show("Invalid Preset File!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+
+        }
+        #endregion
+        #region Preset region
+        public bool LoadPreset(string path)
+        {
+            List<string> lines = new List<string>();
+            using (var streamReader = new StreamReader(path, Encoding.UTF8))
+            {
+                string line;
+                bool isReadKey = false;
+
+                while ((line = streamReader.ReadLine()) != null)
+                {
+                    if (line.ElementAt(0) == '#') continue;
+
+                    if (!isReadKey)
+                    {
+                        if (!CheckValidKeyPreset(line))
+                            return false;
+                        isReadKey = true;
+                        continue;
+                    }
+                    lines.Add(line);
+                }
+            }
+            PresetName = System.IO.Path.GetFileNameWithoutExtension(path);
+            return ReadPreset(lines);
+        }
+        private bool CheckValidKeyPreset(string reg)
+        {
+            Debug.WriteLine("Check: " + reg + PresetKey);
+            return reg == PresetKey;
+        }
+        public bool ReadPreset(List<string> listactions)
+        {
+            foreach (var action in listactions)
+            {
+                string[] element = action.Split(' ');
+                switch (element[0])
+                {
+                    case "NC":
+                        {
+                            actions.Add(new NewCaser() { Args = new NewCaseArgs() { Case = int.Parse(element[1]) } });
+                        }
+                        break;
+                    case "FN":
+                        {
+                            actions.Add(new FullNameNormalize() { Args = new FullnameNormalizeArgs() });
+                        }
+                        break;
+                    case "ISBN":
+                        {
+                            actions.Add(new ISBN() { Args = new ISBNArgs() { Modes = int.Parse(element[1]) } });
+                        }
+                        break;
+                    case "RP":
+                        {
+                            actions.Add(new Replacer() { Args = new ReplaceArgs() { Needle = element[1], Hammer = element[2] } });
+                        }
+                        break;
+                    case "UN":
+                        {
+                            actions.Add(new UniqueName() { Args = new UniqueNameArgs() });
+                        }
+                        break;
+                    case "EC":
+                        {
+                            actions.Add(new ExtensionChanger() { Args = new ExtensionArgs() { oldExt = element[1], newExt = element[2] } });
+                        }
+                        break;
                 }
 
             }
+            UpdateNewName("file");
+            UpdateNewName("folder");
+            return true;
+        }
+        public bool SavePreset(string path)
+        {
+            using (var streamWriter = new StreamWriter(path))
+            {
+                WriteCommentFilePreset(streamWriter);
+                streamWriter.WriteLine(PresetKey);
+                foreach (var action in actions)
+                {
+                    switch (action)
+                    {
+                        case NewCaser n:
+                            {
+                                streamWriter.WriteLine("NC" + " " + (n.Args as NewCaseArgs).Case);
+                            }
+                            break;
+                        case Replacer r:
+                            {
+                                streamWriter.WriteLine("RP" + " " + (r.Args as ReplaceArgs).Needle + " " + (r.Args as ReplaceArgs).Hammer);
+                            }
+                            break;
+                        case ISBN i:
+                            {
+                                streamWriter.WriteLine("ISBN" + " " + (i.Args as ISBNArgs).Modes);
+
+                            }
+                            break;
+                        case FullNameNormalize f:
+                            {
+                                streamWriter.WriteLine("FN");
+                            }
+                            break;
+                        case ExtensionChanger e:
+                            {
+                                streamWriter.WriteLine("EC" + " " + (e.Args as ExtensionArgs).oldExt + " " + (e.Args as ExtensionArgs).newExt);
+
+                            }
+                            break;
+                        case UniqueName u:
+                            {
+                                streamWriter.WriteLine("UN");
+                            }
+                            break;
+                    }
+                }
+            }
+            return true;
+        }
+        public void WriteCommentFilePreset(StreamWriter sw)
+        {
+            sw.WriteLine("#Preset File of BatchRename.\t Member 1753107 - 1753130 - 1753124.");
+            sw.WriteLine("#Please use '#' at headline to write comment.");
+            sw.WriteLine("#Syntax: \"KeyAction\" + \" \" + \"parameter1\" + \" \" + \"parameter1\" + '...'");
+            sw.WriteLine("#Actions list:");
+            sw.WriteLine("#1.NewCase : Key(NC): ");
+            sw.WriteLine("#parameter1 = 0: ToUpperCase.\t 1: ToLowerCase.\t 2: ToFirstLetterCase.");
+            sw.WriteLine("#2.Replace : Key(RP): ");
+            sw.WriteLine("#parameter1 =  FindWhat\t parameter2 =  ReplaceWith");
+            sw.WriteLine("#3.Move : Key(ISBN): ");
+            sw.WriteLine("#parameter1 = StartIndex\t parameter2 = Length");
+            sw.WriteLine("#4.Fullname Normalize : Key(FN): ");
+            sw.WriteLine("#5.Unique Name: Key(UN): ");
+            sw.WriteLine("#6.Change Extension : Key(EC): ");
+            sw.WriteLine("#parameter1 =  from\t parameter2 = to");
+        }
+        #endregion
+
+        #region Function navigate
+        private void BtnUpFunc(object sender, RoutedEventArgs e)
+        {
+            int index = listView.SelectedIndex;
+            if(index > 0)
+            {
+                var temp = actions[index];
+                actions.RemoveAt(index);
+                actions.Insert(index - 1, temp);
+                UpdateNewName("file");
+                UpdateNewName("folder");
+            }
+        }
+        private void BtnDownFunc(object sender, RoutedEventArgs e)
+        {
+            int index = listView.SelectedIndex;
+            if (index < actions.Count - 1)
+            {
+                var temp = actions[index];
+                actions.RemoveAt(index);
+                actions.Insert(index + 1,temp);
+                UpdateNewName("file");
+                UpdateNewName("folder");
+            }
+        }
+        private void BtnEditFunc(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as Button).DataContext;
+            int index = listView.Items.IndexOf(item);
+            var action = listView.Items.GetItemAt(index);
+            (action as IActions).ShowUpdateArgDialog(this);
+            if (_tabcontrolShow.SelectedIndex == 0)
+                UpdateNewName("file");
+            else UpdateNewName("folder");
+        }
+        private void BtnRemoveFunc(object sender, RoutedEventArgs e)
+        {
+            var item = (sender as Button).DataContext;
+            int index = listView.Items.IndexOf(item);
+            actions.RemoveAt(index);
+            if (_tabcontrolShow.SelectedIndex == 0)
+                UpdateNewName("file");
+            else UpdateNewName("folder");
+        }
+        #endregion
+
+        private void BtnColorMode_Click(object sender, RoutedEventArgs e)
+        {
+            ToggleButton button = sender as ToggleButton;
+            if (button.IsChecked == false)
+            {
+                ForegroundColor = "Black";
+                BackgroundColor = "#f5f5f5";
+                BackgroundfuncColor = "White";
+                ShadowColor = "LightGray";
+                BackgroundtabitemColor = "#f5f5f5";
+            }
+            else
+            {
+                ForegroundColor = "White";
+                BackgroundColor = "#20242a";
+                BackgroundfuncColor = "#323741";
+                ShadowColor = "LightGray";
+                BackgroundtabitemColor = "#424751";
+            }
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            FileShow.ItemsSource = fileList;
+            FolderShow.ItemsSource = folderList;
+            //this._stackPanel_Replace.Children.Remove(_stackPanelReplace);
         }
     }
 }

@@ -10,12 +10,12 @@
         TextElement.FontWeight="Regular"
         TextElement.FontSize="13"
         TextOptions.TextFormattingMode="Ideal" 
-        TextOptions.TextRenderingMode="Auto"   
+        TextOptions.TextRenderingMode="Auto"       
         mc:Ignorable="d"
-        Icon="Icons/icon_app.png"
         WindowStartupLocation="CenterScreen"
+        Icon="Icons/icon.png"
         Loaded="Window_Loaded"
-        Width="Auto" Height="450"
+        Width="Auto" Height="500"
         Title="Batch Rename" x:Name="batchrename" MinHeight="450"  MinWidth="850">
     <Window.Resources>
         <Style x:Key="ScrollBarTrackThumb"
@@ -149,250 +149,210 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TabItem}">
+                        <Grid>
+                            <Border 
+                                Name="Border"
+                                Margin="0,0,-4,0" 
+                                Background="{Binding Path=BackgroundColor,ElementName=batchrename}"
+                                BorderBrush="LightGray" 
+                                BorderThickness="1,1,1,1" 
+                                CornerRadius="2,12,0,0" >
+                                <ContentPresenter x:Name="ContentSite"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    ContentSource="Header"
+                                    Margin="12,2,12,2"
+                                    RecognizesAccessKey="True"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Panel.ZIndex" Value="100" />
+                                <Setter TargetName="Border" Property="Background" Value="{Binding Path=BackgroundtabitemColor,ElementName=batchrename}" />
+                                <Setter TargetName="Border" Property="BorderThickness" Value="3,3,3,0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="280"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Grid.Resources>
-            <DataTemplate x:Key="ShowErrorTemplate">
-                <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}"  VerticalAlignment="Center"/>
-            </DataTemplate>
-        </Grid.Resources>
-        <TabControl Grid.Column="1" Name="_tabcontrolShow" HorizontalAlignment="Left" Margin="0,0,0,0" Height="Auto" VerticalAlignment="Top" Width="Auto">
-            <TabItem Grid.Column="1" Header="Rename Files" Height="35">
-                <DataGrid GridLinesVisibility="All"
+    <materialDesign:DialogHost Name="_dialoghost" Background="{Binding BackgroundColor}" BorderBrush="{Binding BackgroundColor}">
+        <materialDesign:DialogHost.DialogContent>
+            <StackPanel Width="200" Height="200" Background="{Binding BackgroundColor}">
+                <Canvas>
+                    <ProgressBar Name="_processbar" Style="{DynamicResource MaterialDesignCircularProgressBar}"
+                                                      Value="-1"  Foreground="#e65100" Height="70" Width="70" Canvas.Left="50" Canvas.Top="15"
+                                                     HorizontalAlignment="Center" Margin="16" IsIndeterminate="True" />
+                    <materialDesign:PackIcon Name="_imgCheckProcess" Opacity="0" VerticalAlignment="Center" Kind="Check" Foreground="Green" 
+                                                                 Canvas.Left="70" Canvas.Top="37" Width="60" Height="60"/>
+                    <TextBlock Text="{Binding TotalItem,StringFormat=Item:{0}}" Foreground="{Binding ForegroundColor}" FontWeight="Bold" Width="180" HorizontalAlignment="Center" Canvas.Left="78" Canvas.Top="130">
+                    </TextBlock>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Canvas.Left="60" Canvas.Top="160" 
+                                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                                            HorizontalAlignment="Center">CANCEL</Button>
+                </Canvas>
+            </StackPanel>
+        </materialDesign:DialogHost.DialogContent>
+        <Grid Background="{Binding BackgroundColor}" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="350"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <DataTemplate x:Key="ShowErrorTemplate">
+                    <materialDesign:PackIcon Margin="-7" Kind="{Binding ErrorStatus}" Foreground="{Binding ErrorColor}" ToolTip="{Binding ErrorDetail}" VerticalAlignment="Center"/>
+                </DataTemplate>
+            </Grid.Resources>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0" Background="{Binding BackgroundColor}">
+                    <StackPanel Background="{Binding BackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Button Name="_btnSavePreset" Click="BtnSavePreset" ToolTip="Save Preset to File"
+                                Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0">
+                            <materialDesign:PackIcon  Kind="ContentSave" Width="24" Height="24"/>
+                        </Button>
+                        <Separator />
+                        <Label Content="Preset: " Foreground="{Binding ForegroundColor}" FontWeight="Bold" VerticalAlignment="Center"/>
+                        <Label Name="_LabelPreset" ToolTip="Show Preset Name" Foreground="{Binding ForegroundColor}" Content="{Binding PresetName}" FontWeight="DemiBold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" FlowDirection="RightToLeft" Width="135"/>
+                        <Separator/>
+                        <Button Name="_btnLoadFilePreset"  Click="BtnLoadPreset" ToolTip="Load Preset From File"
+                                Style="{StaticResource MaterialDesignFlatButton }">
+                            <materialDesign:PackIcon  Kind="OpenInBrowser" Width="24" Height="24"/>
+                        </Button>
+                    </StackPanel>
+                    <Separator/>
+                    <StackPanel Background="{Binding BackgroundColor}" Orientation="Horizontal" HorizontalAlignment="Stretch">
+                        <Button Name="_btnAddFunc" Click="BtnAddFunc" ToolTip="Add Method"
+                                Style="{StaticResource MaterialDesignFlatButton}">
+                            <materialDesign:PackIcon  Kind="BriefcasePlus" Width="24" Height="24"/>
+                        </Button>
+                        <Separator/>
+                        <Button Name="_btnUpFunc" Click="BtnUpFunc" ToolTip="Move Up Selected Method"
+                                Style="{StaticResource MaterialDesignFlatButton}" >
+                            <materialDesign:PackIcon  Kind="ArrowUpBoldBox" Width="24" Height="24"/>
+                        </Button>
+                        <Button Name="_btnDownFunc" Click="BtnDownFunc" ToolTip="Move Down Selected Method"
+                                Style="{StaticResource MaterialDesignFlatButton}" >
+                            <materialDesign:PackIcon  Kind="ArrowDownBoldBox" Width="24" Height="24"/>
+                        </Button>
+                        <Separator/>
+                        <Button Name="_btnStartBatch" Click="BtnStartBatch" ToolTip="Start Batch"
+                                    Width="90" Style="{StaticResource MaterialDesignFlatButton}">
+                            <materialDesign:PackIcon VerticalAlignment="Center" Kind="PlayArrow" Width="40" Height="35"/>
+                        </Button>
+                        <CheckBox Name="_checkboxSkipfile" Width="80" ToolTip="Skip File If Duplicate">
+                            <TextBlock Text="Skip If Duplicate" Foreground="{Binding ForegroundColor}" FontWeight="DemiBold" TextWrapping="Wrap"/>
+                        </CheckBox>
+                    </StackPanel>
+                    <Separator/>
+                    <TextBlock Text="List Actions" Margin="0,5,0,0" Foreground="{Binding ForegroundColor}" FontWeight="ExtraBold" HorizontalAlignment="Center"/>
+                </StackPanel>
+                <ListView Grid.Column="0" Grid.Row="1" Name="listView" BorderThickness="3" BorderBrush="Gray"
+                       ScrollViewer.HorizontalScrollBarVisibility="Disabled" ToolTip="Actions List" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Name="_border" OpacityMask="LightCyan" Width="auto" Margin="0,-4,0,-4"
+                                Background="{Binding Path=BackgroundfuncColor,ElementName=batchrename}"
+                                BorderThickness="3" CornerRadius="5">
+                                <Border.Effect>
+                                    <DropShadowEffect  Direction="210" ShadowDepth="2"  Color="{Binding Path=ShadowColor, ElementName=batchrename}"/>
+                                </Border.Effect>
+                                <Border.Style>
+                                    <Style>
+                                        <Style.Triggers>
+                                            <Trigger Property="Border.IsMouseOver" Value="True">
+                                                <Setter Property="Border.BorderBrush" Value="Gray"/>
+                                                <Setter Property="Border.Opacity" Value="0.7"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Width="310" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding Description}" Foreground="{Binding Path=ForegroundColor, ElementName=batchrename}" VerticalAlignment="Center"
+                                           Width="220" TextWrapping="Wrap" FontWeight="DemiBold" Margin="8"/>
+                                    <Button Click="BtnEditFunc" Background="Wheat" Margin="5" Height="25" Width="25" >
+                                        <materialDesign:PackIcon Margin="-13,-10,-10,-10"  Foreground="Gray" Kind="Edit" Height="20" Width="20"/>
+                                    </Button>
+                                    <Button Click="BtnRemoveFunc" Background="IndianRed" Margin="5" Height="25" Width="25">
+                                        <materialDesign:PackIcon Margin="-13,-10,-10,-10" Kind="Close" Width="20" Height="20"/>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+            <TabControl Background="{Binding Path=BackgroundColor,ElementName=batchrename}" Grid.Column="1" Name="_tabcontrolShow"  Height="Auto" VerticalAlignment="Top" Width="Auto">
+                <TabItem Header="Rename Files" Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=batchrename}">
+                    <DataGrid GridLinesVisibility="All"
+                              Background="{Binding Path=BackgroundColor,ElementName=batchrename}"
+                              Foreground="{Binding Path=ForegroundColor,ElementName=batchrename}"
                           SelectionUnit="FullRow"
                           SelectionMode="Extended"
-                              CanUserAddRows="False"
-                              VerticalGridLinesBrush="LightGray"
-                              HorizontalGridLinesBrush="LightGray" 
-                              Name="FileShow" AutoGenerateColumns="False">
-                    
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
-                        <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileInfomation.Name ,Mode=OneWay}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="New FileName" MinWidth="150" Width="SizeToCells" Binding="{Binding NewName}" />
-                        <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FileInfomation.FullName,Mode=OneWay}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Error" MinWidth="100" Width="SizeToCells" Binding="{Binding Error,Mode=OneWay}" IsReadOnly="True"/>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-            <TabItem Grid.Column="1" Header="Rename Folder" Height="35">
-                <DataGrid Name="FolderShow" AutoGenerateColumns="False"
-                              CanUserAddRows="False"
-                              VerticalGridLinesBrush="LightGray"
-                              HorizontalGridLinesBrush="LightGray"
+                          CanUserAddRows="False"
+                          VerticalGridLinesBrush="LightGray"
+                          HorizontalGridLinesBrush="LightGray" 
+                          Name="FileShow" AutoGenerateColumns="False">
+                        <DataGrid.Resources>
+                            <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Foreground" Value="{Binding Path=ForegroundColor,ElementName=batchrename}" />
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
+                            <DataGridTextColumn Header="FileName" MinWidth="150"  Width="SizeToCells" Binding="{Binding FileName ,Mode=OneWay}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="New FileName" MinWidth="250" Width="SizeToCells" Binding="{Binding NewName}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Path" MinWidth="150" Width="SizeToCells" Binding="{Binding FullPath,Mode=OneWay}" IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+                <TabItem Header="Rename Folder" Height="35" Foreground="{Binding Path=ForegroundColor,ElementName=batchrename}">
+                    <DataGrid Name="FolderShow" AutoGenerateColumns="False"
+                              Background="{Binding Path=BackgroundColor,ElementName=batchrename}"
+                              Foreground="{Binding Path=ForegroundColor,ElementName=batchrename}"
+                          CanUserAddRows="False"
+                          VerticalGridLinesBrush="LightGray"
+                          HorizontalGridLinesBrush="LightGray"
                           GridLinesVisibility="All">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
-                        <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderInfomation.Name ,Mode=OneWay}"  IsReadOnly="True"/>
-                        <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" />
-                        <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FolderInfomation.FullName,Mode=OneWay}" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Error"  MinWidth="100" Width="SizeToCells" Binding="{Binding Error,Mode=OneWay}" IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </TabItem>
-        </TabControl>
-        <ToolBarTray Background="White" Grid.Column="1" Height="35" Width="340" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="192,2,0,0" >
-            <ToolBar Loaded="ToolBar_Loaded">
-                <Button Name="_btnAdd" Style="{StaticResource MaterialDesignFlatButton}" Margin="0,0,-5,0"
-                        Click="BtnAdd_Click" Height="35">
-                    <StackPanel Orientation="Horizontal" Margin="-10">
-                        <Image Source="Icons/icon_add.png" Height="20" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <Label Content="Add"/>
-                    </StackPanel>
+                        <DataGrid.Resources>
+                            <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Foreground" Value="{Binding Path=ForegroundColor,ElementName=batchrename}" />
+                            </Style>
+                        </DataGrid.Resources>
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn CellTemplate="{StaticResource ShowErrorTemplate}" Width="35" />
+                            <DataGridTextColumn Header="FolderName" MinWidth="150"   Width="SizeToCells" Binding="{Binding FolderName ,Mode=OneWay}"  IsReadOnly="True"/>
+                            <DataGridTextColumn Header="New FolderName" MinWidth="150"  Width="SizeToCells" Binding="{Binding NewName}" IsReadOnly="True"/>
+                            <DataGridTextColumn Header="Path"  MinWidth="150"  Width="SizeToCells"  Binding="{Binding FullPath,Mode=OneWay}" IsReadOnly="True"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </TabItem>
+            </TabControl>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="230,2,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Height="35">
+                <Button Name="_btnAdd" Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="BtnAdd_Click" ToolTip="Add File/Folder From Folder">
+                    <materialDesign:PackIcon  Kind="FilePlus" Width="24" Height="24"/>
                 </Button>
                 <Separator />
-                <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}" Margin="-5,0,-5,0"
-                        Click="BtnRemove_Click" Height="35">
-                    <StackPanel Orientation="Horizontal" Margin="-10">
-                        <Image Source="Icons/icon_clear.png" Height="20"  RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Padding="5" Text="Remove"/>
-                    </StackPanel>
+                <Button Name="_btnRemove" Style="{StaticResource MaterialDesignFlatButton}"
+                        Click="BtnRemove_Click" ToolTip="Remove File/Folder From List">
+                    <materialDesign:PackIcon  Kind="FileRemove" Width="24" Height="24"/>
                 </Button>
-                <Separator/>
-                <!--Button Name="_btnTopShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Top" Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_top.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Button Name="_btnUpShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Up"  Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_up.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Button Name="_btnDownShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Down" Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_down.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Button Name="_btnBottomShow" Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}" Click="MenuItem_Tab_Bottom" Width="25" Height="25">
-                    <Button.Background>
-                        <ImageBrush ImageSource="Icons/icon_bottom.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                    </Button.Background>
-                </Button>
-                <Separator /-->
-            </ToolBar>
-        </ToolBarTray>
-        <DockPanel  VerticalAlignment="Top" HorizontalAlignment="Left">
-            <ToolBarTray DockPanel.Dock="Top" Height="35">
-                <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnRefresh" Margin="-5,0,0,0" Click="BtnRefresh" Width="79" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel Orientation="Horizontal" Margin="-10">
-                            <Image Source="Icons/icon_refresh_16.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            <TextBlock Padding="2" Text="Refresh"/>
-                        </StackPanel>
-                    </Button>
-                    <Separator />
-                    <Menu Name="_menuHelp" Height="35" Width="70">
-                        <MenuItem  Header="Help" Padding="-1,7,15,10">
-                            <MenuItem.Icon >
-                                <Image Source="Icons/icon_help.png" Width="12" Height="12"/>
-                            </MenuItem.Icon>
-                            <MenuItem  Header="About" Click="ShowAbout"/>
-                            <MenuItem Header="Help" Click="Help"/>
-                        </MenuItem>
-                    </Menu>
-                    <Separator />
-                    <Button Name="_btnStartBatch" Click="BtnStartBatch" Width="70" Height="35" Style="{StaticResource MaterialDesignFlatButton}">
-                        <StackPanel Orientation="Horizontal" Margin="-10">
-                            <Image Source="Icons/icon_play.png" Height="16" RenderOptions.BitmapScalingMode="HighQuality"/>
-                            <TextBlock Text="START" Padding="5"/>
-                        </StackPanel>
-                    </Button>
-                    <Separator />
-                </ToolBar>
-            </ToolBarTray>
-        </DockPanel>
-        <DockPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,35">
-            <ToolBarTray DockPanel.Dock="Top" Height="35">
-                <ToolBar Loaded="ToolBar_Loaded" Width="280">
-                    <Button Name="_btnNewPreset" Width="25" Click="BtnNewPreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton}">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_new.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </Button.Background>
-                    </Button>
-                    <Separator />
-                    <Button Name="_btnSavePreset" Width="25" Click="BtnSavePreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_save.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </Button.Background>
-                    </Button>
-                    <Separator />
-                    <TextBlock Text="Preset:" VerticalAlignment="Center"/>
-                    <ComboBox Name="_comboboxPreset" Width="100"/>
-                    <Button Name="_btnLoadFilePreset" Width="25" Click="BtnLoadPreset" Height="25" Style="{StaticResource MaterialDesignRaisedButton }">
-                        <Button.Background>
-                            <ImageBrush ImageSource="Icons/icon_openfile.png" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        </Button.Background>
-                    </Button>
-                    <Separator />
-                </ToolBar>
-            </ToolBarTray>
-        </DockPanel>
-        <StackPanel Orientation="Vertical" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0,80,0,0" Width="280">
-            <Separator />
-            <StackPanel Name="_stackPanel_NewCase">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="230"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Image Source="Icons/icon_property1.png" Width="25" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="New Case"/>
-                    </StackPanel>
-                    <ToggleButton Grid.Column="1"  Width="50" Name="_btnNewCase" Height="35" Click="BtnNewCase" IsChecked="{Binding ElementName=batchrename, Path=IsNewCase,Mode=TwoWay}" />
-                </Grid>
-
-                <ComboBox Name="_comboboxNewCase" SelectionChanged="_comboboxNewCase_SelectionChanged"
-                              Width="150" Height="35" Margin="0,0,20,0"
-                              HorizontalAlignment="Right" 
-                              HorizontalContentAlignment="Center"
-                              VerticalContentAlignment="Center">
-                    <ComboBoxItem Name="_comboboxitem_ToupperCase" Content="To UpperCase"   VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                    <ComboBoxItem Name="_comboboxitem_TolowerCase"  Content="To LowerCase" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                    <ComboBoxItem Name="_comboboxitem_FirstUpperCase"  Content="First Upper" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
-                </ComboBox>
+                <ToggleButton ToolTip="Dark Mode/Light Mode" Style="{StaticResource MaterialDesignSwitchDarkToggleButton}" Click="BtnColorMode_Click" Height="30" Width="50">
+                    <materialDesign:PackIcon Kind="LightbulbOn" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <materialDesign:ToggleButtonAssist.OnContent>
+                        <materialDesign:PackIcon Kind="Lightbulb" Height="20" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </materialDesign:ToggleButtonAssist.OnContent>
+                </ToggleButton>
             </StackPanel>
-            <Separator />
-            <StackPanel Name="_stackPanel_Replace">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="230"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Image Source="Icons/icon_property2.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Replace"/>
-                    </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnReplace" Height="35" Click="BtnReplace" IsChecked="{Binding ElementName=batchrename, Path=IsReplace,Mode=TwoWay}"/>
-                </Grid>
-                <StackPanel Name="_stackPanelReplace">
-                    <TextBox Name="_textboxReplace" Height="35" Margin="43,0,20,0"
-                         HorizontalContentAlignment="Right"
-                         VerticalContentAlignment="Center"/>
-                    <StackPanel Orientation="Horizontal" Height="35">
-                        <TextBlock Text="By" FontSize="20" Margin="10,0,0,0" Height="35"/>
-                        <TextBox Name="_textboxReplaceBy" Margin="12,0,0,0" Width="220"  Height="35"
-                             HorizontalContentAlignment="Right"
-                             VerticalContentAlignment="Center"/>
-                    </StackPanel>
-                </StackPanel>
-            </StackPanel>
-            <Separator />
-            <StackPanel Name="_stackPanel_Move">
-                <Grid>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="230"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Image Source="Icons/icon_property3.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Move"/>
-                    </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnMove" Height="35" Click="BtnMove" IsChecked="{Binding ElementName=batchrename, Path=IsMove,Mode=TwoWay}"/>
-
-                </Grid>
-                <StackPanel Name="_stackPanelMove" HorizontalAlignment="Right" Margin="0,0,15,0" Orientation="Horizontal">
-                    <RadioButton GroupName="_radiobtnMove" IsChecked="True" Content="ISBN - FileName" Padding="0,0,10,0"/>
-                    <RadioButton  GroupName="_radiobtnMove" Content="ISBN - FileName" Padding="0,0,0,0"/>
-                </StackPanel>
-            </StackPanel>
-            <Separator />
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="230"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Image Source="Icons/icon_property4.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Margin="7,5,0,-5" Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Fullname normalize"/>
-                    </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnFullName" Height="35" Click="BtnFullName" IsChecked="{Binding ElementName=batchrename, Path=IsFullnameNomalize,Mode=TwoWay}"/>
-                </Grid>
-            </StackPanel>
-            <Separator />
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="230"></ColumnDefinition>
-                        <ColumnDefinition Width="*"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                        <Image Source="Icons/icon_property5.png" Width="25" Margin="0,5,0,5" RenderOptions.BitmapScalingMode="HighQuality"/>
-                        <TextBlock Margin="7,5,0,-5"  Style="{StaticResource MaterialDesignTitleTextBlock}" Height="35" Text="Unique name"/>
-                    </StackPanel>
-                    <ToggleButton Grid.Column="1" Width="50" Name="_btnUniqueName" Height="35" Click="BtnUnique" IsChecked="{Binding ElementName=batchrename, Path=IsUniqueName,Mode=TwoWay}"/>
-                </Grid>
-            </StackPanel>
-            <Separator/>
-        </StackPanel>
-
-    </Grid>
-
+        </Grid>
+    </materialDesign:DialogHost>
 </Window>
